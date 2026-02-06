@@ -18,9 +18,8 @@
 
 ## Descripción General
 
-Este proyecto aborda un desafío crítico en logística urbana: **predecir con precisión los tiempos de entrega de pedidos de comida**. Utilizando machine learning y análisis potenciado por LLM, el sistema proporciona predicciones en tiempo real con un R² de 0.802, superando benchmarks académicos en 5-7%.
-
-**Contexto:** Evaluación técnica para una empresa líder en bienes de consumo, demostrando capacidades completas de ingeniería ML desde exploración de datos hasta despliegue en producción.
+Este proyecto aborda un desafío crítico en la logística urbana: predecir con precisión los tiempos de entrega de pedidos de comida. Mediante un sistema de machine learning de extremo a extremo, complementado con análisis inteligente apoyado por un LLM en la etapa de despliegue, el modelo genera predicciones en tiempo real con un R² de 0.802.
+Además de estimar tiempos de entrega, la solución permite identificar las variables que más influyen en los retrasos y aporta insights relevantes tanto para la operación logística como para la experiencia del cliente.  
 
 ---
 
@@ -28,7 +27,7 @@ Este proyecto aborda un desafío crítico en logística urbana: **predecir con p
 
 **Machine Learning**
 - Modelo Random Forest con R²=0.802
-- 32 features ingenierizadas
+- 32 features 
 - Error promedio <10 minutos
 - Maneja 7 variables de entrada
 
@@ -36,11 +35,10 @@ Este proyecto aborda un desafío crítico en logística urbana: **predecir con p
 - FastAPI con documentación Swagger
 - Validación y health checks
 - Request/response en JSON
-- Tiempo de respuesta <100ms
 
 **Dashboard Interactivo**
 - Predicciones en tiempo real
-- Análisis visual estilo Evidently AI
+- Análisis visual 
 - Métricas de desempeño del modelo
 - Análisis de factores de impacto
 
@@ -48,21 +46,24 @@ Este proyecto aborda un desafío crítico en logística urbana: **predecir con p
 - Insights potenciados por Groq
 - Recomendaciones contextualizadas
 - Templates de comunicación al cliente
-- Modelo Llama 3.3 70B
+- Modelo usado Llama 3.3 70B, lo use porque los tokens son gratis y genera un plus en el analisis.
 
 ---
 
 ## Impacto en el Negocio
 
-| Métrica | Valor | Impacto |
-|---------|-------|---------|
-| **Precisión de Predicción** | 80.2% R² | Reduce quejas de clientes en 30% |
-| **Error Promedio** | 9.4 minutos | Mejora confiabilidad del ETA |
-| **Tiempo de Respuesta API** | <100ms | Predicciones en tiempo real a escala |
-| **Features Ingenierizadas** | 32 features personalizadas | 14% mejora sobre baseline |
-| **Comparación de Modelos** | 3 algoritmos probados | Random Forest seleccionado como ganador |
+| Métrica | Resultado |
+|---------|-----------|
+| **R²** | 0.802 |
+| **MAE** | ~9.4 minutos |
+| **Tiempo de respuesta API** | <100 ms |
+| **Features creadas** | 30+ variables derivadas |
+| **Modelos evaluados** | LightGBM, XGBoost, Random Forest |
+| **Modelo final** | Random Forest |
 
-**Innovación Clave:** La feature `Estimated_Base_Time` (distancia × 2 + tiempo_prep) se convirtió en el predictor más importante, demostrando cómo el conocimiento de dominio potencia el rendimiento del ML.
+**Innovación de mi parte:** Hice una variable derivada que combina la distancia y el tiempo de preparación (Estimated_Base_Time = distancia × 2 + tiempo_prep) la cual se consolidó como uno de los predictores más influyentes del modelo.
+
+
 
 ---
 
@@ -83,6 +84,7 @@ RMSE:      9.42   (error promedio en minutos)
 MAE:       6.57   (error absoluto mediano)
 MAPE:      12.6%  (error porcentual)
 ```
+Random Forest fue elegido como modelo final al obtener el mejor desempeño general en las métricas clave. Presentó el menor RMSE (9.42 min) y el mayor R² (0.802), superando consistentemente a LightGBM y XGBoost. Además de su precisión, mostró buena estabilidad, capacidad para capturar relaciones no lineales y una interpretación clara mediante la importancia de variables, lo que lo hace adecuado para un entorno operativo.
 
 ---
 
@@ -101,10 +103,9 @@ MAPE:      12.6%  (error porcentual)
 
 **Prácticas de Desarrollo**
 - Arquitectura de código modular
-- Type hints y validación
 - Manejo integral de errores
-- Documentación de API (Swagger UI)
-- Control de versiones (Git/GitHub)
+- Documentación de API 
+- Control de versiones 
 
 ---
 
@@ -113,13 +114,15 @@ MAPE:      12.6%  (error porcentual)
 ### Dashboard Streamlit
 
 **Pruébalo:** [https://food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app](https://food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app)
+(Puede que se demore 1 minutito, dejalo cargando quedo muy bonito para que revises)
+
 
 ![Dashboard Principal](images/Opera.png)
 
 **Características:**
 - Sliders interactivos para parámetros de entrega
 - Predicciones en tiempo real con niveles de confianza
-- Análisis visual: gráficos de distribución, gauge, factores de impacto
+- Análisis visual: gráficos de distribución, gauge y factores de impacto
 - Recomendaciones potenciadas por IA
 
 ---
@@ -177,6 +180,33 @@ curl -X POST "http://localhost:8000/predict" \
   "model_version": "v1.0"
 }
 ```
+
+---
+
+## Insights Estratégicos
+
+### Decisiones Clave
+
+**Feature Engineering sobre Modelos Complejos**
+
+Diseñe la variable `Estimated_Base_Time = (Distance × 2) + Prep_Time`, que se convirtió en la feature más importante (importance = 0.232)
+
+**Enfoque API + Dashboard**
+
+Implemente una API para integración de sistemas y dashboard para equipo de operaciones y demos la cual cubre necesidades técnicas y de negocio.
+
+**Integración LLM para Contexto**
+
+Las predicciones son números pero las decisiones necesitan contexto, por eso el LLM proporciona recomendaciones accionables y mejora la comunicación con clientes.
+
+### Desafíos Resueltos
+
+- **Subestimación en días lluviosos:** Propuse features de interacción y mejoras en granularidad de datos
+- **Transferibilidad entre ciudades:** Diseñé enfoque de 3 fases con transfer learning
+- **Preparación para producción:** Documenté arquitectura completa de deployment
+
+Ver análisis estratégico completo en: [`reports/strategic_reflections.md`](reports/strategic_reflections.md)
+
 
 ---
 
@@ -335,41 +365,13 @@ print(f"Tiempo estimado de entrega: {result['predicted_delivery_time_minutes']:.
 
 ---
 
-## Insights Estratégicos
-
-### Decisiones Clave
-
-**Feature Engineering sobre Modelos Complejos**
-
-Creé `Estimated_Base_Time = (Distance × 2) + Prep_Time`, que se convirtió en la feature más importante (importance = 0.232). El conocimiento de dominio simple supera a la complejidad.
-
-**Enfoque API + Dashboard**
-
-API para integración de sistemas (apps móviles, herramientas internas) y dashboard para equipo de operaciones y demos. Cubre necesidades técnicas y de negocio.
-
-**Integración LLM para Contexto**
-
-Las predicciones son números, pero las decisiones necesitan contexto. El LLM proporciona recomendaciones accionables y mejora la comunicación con clientes.
-
-### Desafíos Resueltos
-
-- **Subestimación en días lluviosos:** Propuse features de interacción y mejoras en granularidad de datos
-- **Transferibilidad entre ciudades:** Diseñé enfoque de 3 fases con transfer learning
-- **Preparación para producción:** Documenté arquitectura completa de deployment (Kubernetes, monitoreo, CI/CD)
-
-Ver análisis estratégico completo en: [`reports/strategic_reflections.md`](reports/strategic_reflections.md)
-
----
-
 ## Sobre el Autor
 
 **Jhoan Sebastian Meza Garcia**  
-Data Scientist | ML Engineer
-
-Apasionado por convertir datos en soluciones de impacto real. Este proyecto demuestra capacidades end-to-end en machine learning, desde exploración hasta deployment en producción.
+Estudiante de economia | Universidad Nacional de Colombia
 
 - 💼 [LinkedIn](https://www.linkedin.com/in/jhoan-sebastian-meza-garcia-12228b329/)
-- 🐱 [GitHub](https://github.com/jmeza-data)
+- 🐱 [GitHub](https://github.com/jmeza-data)  <- Tengo mas proyectos si quirees hechar un vistaso.
 
 ### Otros Proyectos
 
@@ -380,20 +382,8 @@ Explora más de mi trabajo:
 - [**Análisis SHAP para Interpretabilidad**](https://github.com/jmeza-data) - Implementación de técnicas de explicabilidad en modelos de ML
 - [**Más proyectos...**](https://github.com/jmeza-data?tab=repositories)
 
----
+yecto es parte de una evaluación técnica. Para fines educativos y de portafolio.
 
-## Licencia
-
-Este proyecto es parte de una evaluación técnica. Para fines educativos y de portafolio.
-
----
-
-## Agradecimientos
-
-- **Dataset:** Kaggle - Food Delivery Time Prediction
-- **LLM:** Groq (Llama 3.3 70B) para análisis inteligente
-- **Frameworks:** Equipos de FastAPI, Streamlit, scikit-learn
-- **Inspiración:** Evidently AI para diseño del dashboard
 
 ---
 
