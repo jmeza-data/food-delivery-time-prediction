@@ -1,7 +1,12 @@
+<div align="center">
+  
 # Food Delivery Time Prediction System
 
-<div align="center">
+</div>
 
+<div align="center">
+  
+![SQL](https://img.shields.io/badge/SQL-Analysis-orange?logo=microsoftsqlserver&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.28-FF4B4B?logo=streamlit&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.104-009688?logo=fastapi&logoColor=white)
@@ -18,9 +23,10 @@
 
 ## Descripción General
 
-Este proyecto aborda un desafío crítico en la logística urbana: predecir con precisión los tiempos de entrega de pedidos de comida. Mediante un sistema de machine learning completo y complementado con análisis inteligente apoyado por un LLM en la etapa de despliegue, el modelo busca generar predicciones en tiempo real con un R² de 0.802.
+## Descripción General
 
-Además de estimar tiempos de entrega, la solución permite identificar las variables que más influyen en los retrasos y aporta insights relevantes tanto para la operación logística del negocio como para la experiencia del cliente.   
+Este proyecto aborda un desafío crítico en la logística urbana: predecir con precisión los tiempos de entrega de pedidos de comida. La solución combina análisis SQL operacional con machine learning y despliegue en producción.
+El componente de SQL identifica patrones de negocio, rutas problemáticas y factores operacionales mediante queries sobre un modelo relacional de 4 tablas. El modelo de ML (Random Forest con R²=0.802) predice tiempos en tiempo real, mientras que la integración con LLM proporciona recomendaciones contextualizadas. Además de estimar tiempos de entrega, la solución permite identificar las variables que más influyen en los retrasos y aporta insights relevantes tanto para la operación logística del negocio como para la experiencia del cliente.
 
 ---
 
