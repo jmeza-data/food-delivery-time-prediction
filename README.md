@@ -21,7 +21,6 @@
 
 ---
 
-## Descripción General
 
 ## Descripción General
 
