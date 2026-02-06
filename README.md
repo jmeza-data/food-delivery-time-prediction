@@ -215,7 +215,7 @@ Ver análisis estratégico completo en: [`reports/strategic_reflections.md`](rep
 ### Prerequisitos
 
 - Python 3.10+
-- pip
+  
 
 ### Instalación
 
@@ -230,14 +230,6 @@ cd food-delivery-time-prediction
 pip install -r requirements.txt
 ```
 
-3. **Configurar variable de entorno** (para integración LLM en Streamlit)
-```bash
-# Windows
-set GROQ_API_KEY=tu_clave_aqui
-
-# Linux/Mac
-export GROQ_API_KEY=tu_clave_aqui
-```
 
 ### Ejecutar el Pipeline ML
 
