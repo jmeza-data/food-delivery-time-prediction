@@ -18,8 +18,8 @@
 
 ## Descripción General
 
-Este proyecto aborda un desafío crítico en la logística urbana: predecir con precisión los tiempos de entrega de pedidos de comida. Mediante un sistema de machine learning de extremo a extremo, complementado con análisis inteligente apoyado por un LLM en la etapa de despliegue, el modelo genera predicciones en tiempo real con un R² de 0.802.
-Además de estimar tiempos de entrega, la solución permite identificar las variables que más influyen en los retrasos y aporta insights relevantes tanto para la operación logística como para la experiencia del cliente.  
+Este proyecto aborda un desafío crítico en la logística urbana: predecir con precisión los tiempos de entrega de pedidos de comida. Mediante un sistema de machine learning completo y complementado con análisis inteligente apoyado por un LLM en la etapa de despliegue, el modelo busca generar predicciones en tiempo real con un R² de 0.802.
+Además de estimar tiempos de entrega, la solución permite identificar las variables que más influyen en los retrasos y aporta insights relevantes tanto para la operación logística del negocio como para la experiencia del cliente.   
 
 ---
 
@@ -114,7 +114,7 @@ Random Forest fue elegido como modelo final al obtener el mejor desempeño gener
 ### Dashboard Streamlit
 
 **Pruébalo:** [https://food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app](https://food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app)
-(Puede que se demore 1 minutito, dejalo cargando quedo muy bonito para que revises)
+**(Puede que se demore 1 minutito, dejalo cargando quedo muy bonito para que revises)**
 
 
 ![Dashboard Principal](images/Opera.png)
@@ -371,7 +371,7 @@ print(f"Tiempo estimado de entrega: {result['predicted_delivery_time_minutes']:.
 Estudiante de economia | Universidad Nacional de Colombia
 
 - 💼 [LinkedIn](https://www.linkedin.com/in/jhoan-sebastian-meza-garcia-12228b329/)
-- 🐱 [GitHub](https://github.com/jmeza-data)  <- Tengo mas proyectos si quirees hechar un vistaso.
+- 🐱 [GitHub](https://github.com/jmeza-data)  >><<>>><- **Tengo mas proyectos si quirees hechar un vistaso.** >><>>><
 
 ### Otros Proyectos
 
@@ -382,7 +382,6 @@ Explora más de mi trabajo:
 - [**Análisis SHAP para Interpretabilidad**](https://github.com/jmeza-data) - Implementación de técnicas de explicabilidad en modelos de ML
 - [**Más proyectos...**](https://github.com/jmeza-data?tab=repositories)
 
-yecto es parte de una evaluación técnica. Para fines educativos y de portafolio.
 
 
 ---
