@@ -114,7 +114,7 @@ MAPE:      12.6%  (error porcentual)
 
 **Pruébalo:** [https://food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app](https://food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app)
 
-![Dashboard Principal](images/Opera_Instantánea_2026-02-06_111106_food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg_streamlit_app.png)
+![Dashboard Principal](images/Opera.png)
 
 **Características:**
 - Sliders interactivos para parámetros de entrega
@@ -126,7 +126,7 @@ MAPE:      12.6%  (error porcentual)
 
 ### Análisis Visual
 
-![Análisis Visual](images/Streamlit_p_2.png)
+![Análisis Visual](images/Streamlit_p2.png)
 
 El dashboard proporciona:
 - **Análisis de Distribución:** Dónde cae tu predicción vs datos históricos
@@ -154,7 +154,7 @@ Llama 3.3 70B de Groq proporciona:
 
 #### Ejemplo de Llamada a la API
 
-![Ejemplo API](images/eJEMPLO_EJECUCION_DE_LA_API.png)
+![Ejemplo API](images/ejemplo.png)
 ```bash
 curl -X POST "http://localhost:8000/predict" \
   -H "Content-Type: application/json" \
