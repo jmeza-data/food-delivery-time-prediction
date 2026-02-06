@@ -19,6 +19,7 @@
 ## Descripción General
 
 Este proyecto aborda un desafío crítico en la logística urbana: predecir con precisión los tiempos de entrega de pedidos de comida. Mediante un sistema de machine learning completo y complementado con análisis inteligente apoyado por un LLM en la etapa de despliegue, el modelo busca generar predicciones en tiempo real con un R² de 0.802.
+
 Además de estimar tiempos de entrega, la solución permite identificar las variables que más influyen en los retrasos y aporta insights relevantes tanto para la operación logística del negocio como para la experiencia del cliente.   
 
 ---
@@ -48,6 +49,12 @@ Además de estimar tiempos de entrega, la solución permite identificar las vari
 - Templates de comunicación al cliente
 - Modelo usado Llama 3.3 70B, lo use porque los tokens son gratis y genera un plus en el analisis.
 
+**Análisis SQL**
+- Queries para análisis operacional
+- Identificación de patrones y tendencias
+- Insights de negocio accionables
+- Modelo relacional documentado
+
 ---
 
 ## Impacto en el Negocio
@@ -62,8 +69,6 @@ Además de estimar tiempos de entrega, la solución permite identificar las vari
 | **Modelo final** | Random Forest |
 
 **Innovación de mi parte:** Hice una variable derivada que combina la distancia y el tiempo de preparación (Estimated_Base_Time = distancia × 2 + tiempo_prep) la cual se consolidó como uno de los predictores más influyentes del modelo.
-
-
 
 ---
 
@@ -84,6 +89,7 @@ RMSE:      9.42   (error promedio en minutos)
 MAE:       6.57   (error absoluto mediano)
 MAPE:      12.6%  (error porcentual)
 ```
+
 Random Forest fue elegido como modelo final al obtener el mejor desempeño general en las métricas clave. Presentó el menor RMSE (9.42 min) y el mayor R² (0.802), superando consistentemente a LightGBM y XGBoost. Además de su precisión, mostró buena estabilidad, capacidad para capturar relaciones no lineales y una interpretación clara mediante la importancia de variables, lo que lo hace adecuado para un entorno operativo.
 
 ---
@@ -99,6 +105,7 @@ Random Forest fue elegido como modelo final al obtener el mejor desempeño gener
 - API: FastAPI, Uvicorn, Pydantic
 - Frontend: Streamlit, Matplotlib, Seaborn
 - LLM: Groq (Llama 3.3 70B)
+- Base de Datos: SQL Server (análisis)
 - Herramientas: Pandas, NumPy, Joblib
 
 **Prácticas de Desarrollo**
@@ -114,8 +121,8 @@ Random Forest fue elegido como modelo final al obtener el mejor desempeño gener
 ### Dashboard Streamlit
 
 **Pruébalo:** [https://food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app](https://food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app)
-**(Puede que se demore 1 minutito, dejalo cargando quedo muy bonito para que revises)**
 
+**(Puede que se demore 1 minutito, dejalo cargando quedo muy bonito para que revises)**
 
 ![Dashboard Principal](images/Opera.png)
 
@@ -183,6 +190,50 @@ curl -X POST "http://localhost:8000/predict" \
 
 ---
 
+## Análisis SQL
+
+### Modelo Relacional
+
+![Modelo de Base de Datos](images/diagrama.png)
+
+El diseño de la base de datos captura la operación completa del sistema de entregas con 4 tablas principales conectadas mediante foreign keys.
+
+**Relaciones:**
+- Un `DELIVERY_PERSON` realiza muchas `DELIVERIES` (1:N)
+- Un `RESTAURANT` prepara muchas `ORDERS` (1:N)
+- Una `DELIVERY` contiene muchas `ORDERS` (1:N)
+
+### Queries Implementadas
+
+El proyecto incluye análisis SQL completo en la carpeta `SQL/`:
+
+**5 Queries Principales:**
+1. **Top 5 áreas con mayor tiempo de entrega** (últimos 30 días)
+2. **Tiempo promedio por tráfico, área y tipo de cocina**
+3. **Top 10 couriers más rápidos** (mínimo 50 entregas activas)
+4. **Área de restaurante más rentable** (últimos 3 meses)
+5. **Couriers con tendencia creciente en tiempos de entrega**
+
+**8 Análisis Adicionales:**
+- Patrones temporales de demanda (horas pico)
+- Impacto del clima en eficiencia operativa
+- Identificación de rutas problemáticas
+- Correlación experiencia vs desempeño
+- Factores que afectan satisfacción del cliente
+- Rentabilidad por tipo de cocina
+- Detección de anomalías en entregas
+- Optimización de tamaño de flota
+
+Ver análisis completo en: [`SQL/sql_insights.md`](SQL/sql_insights.md)
+
+### Insights SQL Destacados
+
+Los análisis revelaron que las horas pico (12-14h y 19-21h) son altamente predecibles. El clima adverso incrementa tiempos en 15-20%. Los couriers con más de 2 años de experiencia son 15% más rápidos. El rating del cliente cae drásticamente cuando el tiempo supera 60 minutos.
+
+Identifiqué rutas específicas consistentemente lentas y tipos de cocina con mejor rentabilidad por minuto. El análisis de fleet size mostró que el ratio óptimo es 3-4 entregas por courier por hora.
+
+---
+
 ## Insights Estratégicos
 
 ### Decisiones Clave
@@ -207,7 +258,6 @@ Las predicciones son números pero las decisiones necesitan contexto, por eso el
 
 Ver análisis estratégico completo en: [`reports/strategic_reflections.md`](reports/strategic_reflections.md)
 
-
 ---
 
 ## Inicio Rápido
@@ -215,7 +265,6 @@ Ver análisis estratégico completo en: [`reports/strategic_reflections.md`](rep
 ### Prerequisitos
 
 - Python 3.10+
-  
 
 ### Instalación
 
@@ -229,7 +278,6 @@ cd food-delivery-time-prediction
 ```bash
 pip install -r requirements.txt
 ```
-
 
 ### Ejecutar el Pipeline ML
 
@@ -268,6 +316,10 @@ El dashboard se abrirá en: http://localhost:8501
 ```
 food-delivery-time-prediction/
 │
+├── SQL/                         # Análisis SQL
+│   ├── sql_queries.sql          # 5 queries principales
+│   └── sql_insights.md          # 8 análisis adicionales
+│
 ├── model_pipeline/              # Módulos del pipeline ML
 │   ├── config.py                # Configuración
 │   ├── data_loader.py           # Carga de datos
@@ -294,6 +346,8 @@ food-delivery-time-prediction/
 │   └── strategic_reflections.md
 │
 ├── images/                      # Assets del README
+│   ├── diagrama.png             # Modelo relacional SQL
+│   └── ...
 │
 ├── notebooks/                   # Análisis exploratorio
 │   └── 01_EDA.ipynb
@@ -363,7 +417,7 @@ print(f"Tiempo estimado de entrega: {result['predicted_delivery_time_minutes']:.
 Estudiante de economia | Universidad Nacional de Colombia
 
 - 💼 [LinkedIn](https://www.linkedin.com/in/jhoan-sebastian-meza-garcia-12228b329/)
-- 🐱 [GitHub](https://github.com/jmeza-data)  >><<>>><- **Tengo mas proyectos si quirees hechar un vistaso.** >><>>><
+- 🐱 [GitHub](https://github.com/jmeza-data) >><<>>><- **Tengo mas proyectos si quieres hechar un vistazo.** >><>>>
 
 ### Otros Proyectos
 
@@ -373,7 +427,6 @@ Explora más de mi trabajo:
 - [**Regresión IPM Continuo a Nivel de Hogar**](https://github.com/jmeza-data) - Modelo XGBoost para predecir IPM usando variables socioeconómicas
 - [**Análisis SHAP para Interpretabilidad**](https://github.com/jmeza-data) - Implementación de técnicas de explicabilidad en modelos de ML
 - [**Más proyectos...**](https://github.com/jmeza-data?tab=repositories)
-
 
 
 ---
