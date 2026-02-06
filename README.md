@@ -68,9 +68,7 @@ Este proyecto aborda un desafío crítico en logística urbana: **predecir con p
 
 ## Comparación de Modelos
 
-<p align="center">
-  <img src="images/model-comparison.png" alt="Comparación de Modelos" width="700"/>
-</p>
+![Comparación de Modelos](images/model-comparison.png)
 
 **Random Forest superó a los competidores:**
 - RMSE: 9.42 min (vs 10.27 LightGBM, 10.64 XGBoost)
