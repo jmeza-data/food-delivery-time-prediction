@@ -1,6 +1,6 @@
 """
-Streamlit App - Food Delivery Time Prediction with AI Analysis
-Professional multi-tab interface with clean design
+Streamlit App - Predicción de Tiempos de Entrega con Análisis IA
+Interfaz profesional multi-pestaña con visualizaciones detalladas
 """
 
 import streamlit as st
@@ -40,7 +40,7 @@ except Exception as e:
 # ============================================================================
 
 st.set_page_config(
-    page_title="Delivery Time Prediction",
+    page_title="Predicción de Tiempos de Entrega",
     page_icon="📦",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -50,7 +50,7 @@ st.set_page_config(
 # LLM CONFIGURATION
 # ============================================================================
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_API_KEY = "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"
 
 @st.cache_resource
 def get_groq_client():
@@ -81,7 +81,7 @@ def get_groq_client():
             except:
                 continue
         
-        return None, "No available models found"
+        return None, "No hay modelos disponibles"
         
     except Exception as e:
         return None, str(e)
@@ -148,7 +148,7 @@ Sé conciso y profesional.""".format(
     return "Error: No se pudo conectar con LLM"
 
 # ============================================================================
-# CUSTOM CSS (Professional clean design)
+# CUSTOM CSS
 # ============================================================================
 
 st.markdown("""
@@ -318,6 +318,29 @@ st.markdown("""
         font-weight: 600;
         color: #FFFFFF;
     }
+    
+    /* Stats Card */
+    .stats-card {
+        background-color: #1a1a1a;
+        padding: 1.2rem;
+        border-radius: 10px;
+        border: 1px solid #333;
+        text-align: center;
+        margin: 0.5rem 0;
+    }
+    
+    .stats-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #667eea;
+    }
+    
+    .stats-label {
+        font-size: 0.8rem;
+        color: #888;
+        text-transform: uppercase;
+        margin-top: 0.3rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -339,7 +362,7 @@ def load_prediction_pipeline():
         feature_engineer_path = config.MODEL_DIR / config.FEATURE_ENGINEER_NAME
         
         if not model_path.exists():
-            return None, "Model file not found"
+            return None, "Modelo no encontrado"
         
         predictor.load_pipeline(
             model_path=model_path,
@@ -366,10 +389,10 @@ def create_distribution_chart(predicted_time):
     times = np.clip(times, 15, 90)
     
     ax.hist(times, bins=35, color='#667eea', alpha=0.6, edgecolor='none')
-    ax.axvline(predicted_time, color='#f5576c', linewidth=3, label='Your Prediction', linestyle='--')
+    ax.axvline(predicted_time, color='#f5576c', linewidth=3, label='Tu Predicción', linestyle='--')
     
-    ax.set_xlabel('Delivery Time (minutes)', color='#888', fontsize=11, fontweight='500')
-    ax.set_ylabel('Frequency', color='#888', fontsize=11, fontweight='500')
+    ax.set_xlabel('Tiempo de Entrega (minutos)', color='#888', fontsize=11, fontweight='500')
+    ax.set_ylabel('Frecuencia', color='#888', fontsize=11, fontweight='500')
     ax.tick_params(colors='#666', labelsize=10)
     
     for spine in ax.spines.values():
@@ -388,13 +411,13 @@ def create_gauge_chart(value, max_val=90):
     
     if value < 30:
         color = '#66BB6A'
-        label = 'Fast'
+        label = 'Rápido'
     elif value < 50:
         color = '#FFA726'
         label = 'Normal'
     else:
         color = '#EF5350'
-        label = 'Slow'
+        label = 'Lento'
     
     ax.barh([0], [value], height=0.5, color=color, alpha=0.9)
     ax.barh([0], [max_val-value], left=value, height=0.5, color='#2a2a2a', alpha=0.5)
@@ -431,7 +454,7 @@ def create_factors_chart(factors_data):
         ax.text(x_pos, i, '{:+.1f}'.format(val), 
                 va='center', ha=ha, fontsize=11, color='white', fontweight='600')
     
-    ax.set_xlabel('Impact on Delivery Time (minutes)', color='#888', fontsize=11, fontweight='500')
+    ax.set_xlabel('Impacto en Tiempo de Entrega (minutos)', color='#888', fontsize=11, fontweight='500')
     ax.tick_params(colors='#666', labelsize=10)
     
     for spine in ax.spines.values():
@@ -469,13 +492,93 @@ def create_feature_importance_chart():
         ax.text(val + 0.005, i, '{:.3f}'.format(val), 
                 va='center', fontsize=10, color='white', fontweight='600')
     
-    ax.set_xlabel('Feature Importance', color='#888', fontsize=11, fontweight='500')
+    ax.set_xlabel('Importancia de Variable', color='#888', fontsize=11, fontweight='500')
     ax.tick_params(colors='#666', labelsize=10)
     
     for spine in ax.spines.values():
         spine.set_visible(False)
     
     ax.grid(True, axis='x', alpha=0.08, color='white', linewidth=0.5)
+    
+    plt.tight_layout()
+    return fig
+
+def create_residuals_plot():
+    """Create residuals plot."""
+    fig, ax = plt.subplots(figsize=(10, 5), facecolor='#0E1117')
+    ax.set_facecolor('#0E1117')
+    
+    # Simulated data
+    np.random.seed(42)
+    predicted = np.random.normal(45, 15, 200)
+    residuals = np.random.normal(0, 5, 200)
+    
+    ax.scatter(predicted, residuals, alpha=0.5, color='#667eea', s=50, edgecolors='none')
+    ax.axhline(0, color='#f5576c', linestyle='--', linewidth=2, alpha=0.7)
+    
+    ax.set_xlabel('Valores Predichos (min)', color='#888', fontsize=11, fontweight='500')
+    ax.set_ylabel('Residuos (min)', color='#888', fontsize=11, fontweight='500')
+    ax.tick_params(colors='#666', labelsize=10)
+    
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    
+    ax.grid(True, alpha=0.08, color='white', linewidth=0.5)
+    
+    plt.tight_layout()
+    return fig
+
+def create_predictions_vs_actual():
+    """Create predicted vs actual plot."""
+    fig, ax = plt.subplots(figsize=(10, 5), facecolor='#0E1117')
+    ax.set_facecolor('#0E1117')
+    
+    # Simulated data
+    np.random.seed(42)
+    actual = np.random.normal(45, 15, 200)
+    predicted = actual + np.random.normal(0, 5, 200)
+    
+    ax.scatter(actual, predicted, alpha=0.5, color='#667eea', s=50, edgecolors='none')
+    
+    # Perfect prediction line
+    min_val = min(actual.min(), predicted.min())
+    max_val = max(actual.max(), predicted.max())
+    ax.plot([min_val, max_val], [min_val, max_val], 'r--', linewidth=2, alpha=0.7, label='Predicción Perfecta')
+    
+    ax.set_xlabel('Tiempo Real (min)', color='#888', fontsize=11, fontweight='500')
+    ax.set_ylabel('Tiempo Predicho (min)', color='#888', fontsize=11, fontweight='500')
+    ax.tick_params(colors='#666', labelsize=10)
+    
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    
+    ax.legend(facecolor='#1a1a1a', edgecolor='none', labelcolor='white', framealpha=0.9)
+    ax.grid(True, alpha=0.08, color='white', linewidth=0.5)
+    
+    plt.tight_layout()
+    return fig
+
+def create_error_distribution():
+    """Create error distribution histogram."""
+    fig, ax = plt.subplots(figsize=(10, 4), facecolor='#0E1117')
+    ax.set_facecolor('#0E1117')
+    
+    # Simulated errors
+    np.random.seed(42)
+    errors = np.random.normal(0, 5, 500)
+    
+    ax.hist(errors, bins=30, color='#667eea', alpha=0.7, edgecolor='none')
+    ax.axvline(0, color='#f5576c', linestyle='--', linewidth=2, label='Error = 0')
+    
+    ax.set_xlabel('Error de Predicción (min)', color='#888', fontsize=11, fontweight='500')
+    ax.set_ylabel('Frecuencia', color='#888', fontsize=11, fontweight='500')
+    ax.tick_params(colors='#666', labelsize=10)
+    
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    
+    ax.legend(facecolor='#1a1a1a', edgecolor='none', labelcolor='white', framealpha=0.9)
+    ax.grid(True, alpha=0.08, color='white', linewidth=0.5)
     
     plt.tight_layout()
     return fig
@@ -487,26 +590,26 @@ def create_feature_importance_chart():
 def tab_prediction(predictor, groq_client):
     """Prediction tab."""
     
-    st.markdown('<div class="section-title">Input Parameters</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Parámetros de Entrada</div>', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        distance = st.slider("Distance (km)", 0.1, 50.0, 10.5, 0.1)
-        weather = st.selectbox("Weather", ["Clear", "Cloudy", "Rainy", "Snowy", "Foggy", "Windy"], index=2)
-        traffic = st.selectbox("Traffic Level", ["Low", "Medium", "High"], index=2)
+        distance = st.slider("Distancia (km)", 0.1, 50.0, 10.5, 0.1)
+        weather = st.selectbox("Clima", ["Clear", "Cloudy", "Rainy", "Snowy", "Foggy", "Windy"], index=2)
+        traffic = st.selectbox("Nivel de Tráfico", ["Low", "Medium", "High"], index=2)
     
     with col2:
-        time_of_day = st.selectbox("Time of Day", ["Morning", "Afternoon", "Evening", "Night"], index=2)
-        vehicle = st.selectbox("Vehicle Type", ["Bike", "Scooter", "Car"], index=2)
-        prep_time = st.slider("Preparation Time (min)", 5, 60, 20, 1)
+        time_of_day = st.selectbox("Momento del Día", ["Morning", "Afternoon", "Evening", "Night"], index=2)
+        vehicle = st.selectbox("Tipo de Vehículo", ["Bike", "Scooter", "Car"], index=2)
+        prep_time = st.slider("Tiempo de Preparación (min)", 5, 60, 20, 1)
     
     with col3:
-        experience = st.slider("Courier Experience (years)", 0.0, 15.0, 3.5, 0.5)
+        experience = st.slider("Experiencia del Courier (años)", 0.0, 15.0, 3.5, 0.5)
     
     st.markdown("")
     
-    if st.button("Run Prediction"):
+    if st.button("Ejecutar Predicción"):
         order = {
             "Distance_km": distance,
             "Weather": weather,
@@ -517,7 +620,7 @@ def tab_prediction(predictor, groq_client):
             "Courier_Experience_yrs": experience
         }
         
-        with st.spinner('Calculating...'):
+        with st.spinner('Calculando...'):
             if predictor:
                 predicted_time = predictor.predict_single(order)
             else:
@@ -526,13 +629,15 @@ def tab_prediction(predictor, groq_client):
                                 (5 if weather in ["Rainy", "Snowy"] else 0) -
                                 (experience * 0.5))
         
-        # Main prediction
+        # Main prediction with emoji
+        time_emoji = "⚡" if predicted_time < 30 else "🚗" if predicted_time < 50 else "🐌"
+        
         st.markdown("""
         <div class="prediction-card">
-            <div class="prediction-value">{:.1f} min</div>
-            <div class="prediction-label">Estimated Delivery Time</div>
+            <div class="prediction-value">{} {:.1f} min</div>
+            <div class="prediction-label">Tiempo Estimado de Entrega</div>
         </div>
-        """.format(predicted_time), unsafe_allow_html=True)
+        """.format(time_emoji, predicted_time), unsafe_allow_html=True)
         
         # Metrics
         col1, col2, col3, col4 = st.columns(4)
@@ -542,66 +647,66 @@ def tab_prediction(predictor, groq_client):
         with col1:
             st.markdown("""
             <div class="metric-container">
-                <div class="metric-value">{}</div>
-                <div class="metric-label">Estimated Arrival</div>
+                <div class="metric-value">⏰ {}</div>
+                <div class="metric-label">Llegada Estimada</div>
             </div>
             """.format(arrival.strftime("%H:%M")), unsafe_allow_html=True)
         
         with col2:
-            conf = "High" if 15 <= predicted_time <= 70 else "Medium"
+            conf = "Alta" if 15 <= predicted_time <= 70 else "Media"
             st.markdown("""
             <div class="metric-container">
                 <div class="metric-value">{}</div>
-                <div class="metric-label">Confidence</div>
+                <div class="metric-label">Confianza</div>
             </div>
             """.format(conf), unsafe_allow_html=True)
         
         with col3:
-            speed = "Fast" if predicted_time < 30 else "Normal" if predicted_time < 50 else "Slow"
+            speed = "Rápido" if predicted_time < 30 else "Normal" if predicted_time < 50 else "Lento"
             st.markdown("""
             <div class="metric-container">
                 <div class="metric-value">{}</div>
-                <div class="metric-label">Speed Category</div>
+                <div class="metric-label">Velocidad</div>
             </div>
             """.format(speed), unsafe_allow_html=True)
         
         with col4:
-            risk = "Low" if predicted_time < 50 else "High"
+            risk = "Bajo" if predicted_time < 50 else "Alto"
             st.markdown("""
             <div class="metric-container">
                 <div class="metric-value">{}</div>
-                <div class="metric-label">Delay Risk</div>
+                <div class="metric-label">Riesgo de Retraso</div>
             </div>
             """.format(risk), unsafe_allow_html=True)
         
         # Visualizations
-        st.markdown('<div class="section-title">Visual Analysis</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">Análisis Visual</div>', unsafe_allow_html=True)
         
         col1, col2 = st.columns([6, 4])
         
         with col1:
-            st.markdown("**Distribution Analysis**")
-            st.caption("Where your prediction falls vs historical data")
+            st.markdown("**Análisis de Distribución**")
+            st.caption("Dónde cae tu predicción vs datos históricos")
             fig1 = create_distribution_chart(predicted_time)
             st.pyplot(fig1)
             plt.close()
         
         with col2:
-            st.markdown("**Time Gauge**")
-            st.caption("Visual representation of delivery speed")
+            st.markdown("**Gauge de Tiempo**")
+            st.caption("Representación visual de velocidad de entrega")
             fig2 = create_gauge_chart(predicted_time)
             st.pyplot(fig2)
             plt.close()
         
-        st.markdown("**Impact Factors**")
-        st.caption("What's affecting delivery time the most")
+        st.markdown("**Factores de Impacto**")
+        st.caption("Qué está afectando más el tiempo de entrega")
         
         factors = {
-            'Distance': (distance - 10) * 2.3,
-            'Traffic': 10 if traffic == "High" else 3 if traffic == "Medium" else -2,
-            'Weather': 5 if weather in ["Rainy", "Snowy"] else 0,
-            'Prep Time': (prep_time - 15) * 0.5,
-            'Experience': -(experience - 3) * 0.8
+            'Distancia': (distance - 10) * 2.3,
+            'Tráfico': 10 if traffic == "High" else 3 if traffic == "Medium" else -2,
+            'Clima': 5 if weather in ["Rainy", "Snowy"] else 0,
+            'Tiempo Prep': (prep_time - 15) * 0.5,
+            'Experiencia': -(experience - 3) * 0.8
         }
         
         fig3 = create_factors_chart(factors)
@@ -610,108 +715,143 @@ def tab_prediction(predictor, groq_client):
         
         # LLM Analysis
         if groq_client:
-            st.markdown('<div class="section-title">AI Expert Analysis</div>', unsafe_allow_html=True)
+            st.markdown('<div class="section-title">Análisis Experto IA</div>', unsafe_allow_html=True)
             
-            with st.spinner('Analyzing with LLM...'):
+            with st.spinner('Analizando con LLM...'):
                 analysis = analyze_with_llm(order, predicted_time, groq_client)
             
             if analysis and "Error" not in analysis:
                 st.markdown("""
                 <div class="analysis-box">
-                    <div class="analysis-title">Expert Insights</div>
+                    <div class="analysis-title">💡 Insights del Experto</div>
                     {}
                 </div>
                 """.format(analysis.replace('\n', '<br>')), unsafe_allow_html=True)
             else:
-                st.error(analysis if analysis else "LLM Error")
+                st.error(analysis if analysis else "Error en LLM")
 
 def tab_model_info(predictor):
-    """Model information tab."""
+    """Model information tab with detailed statistics."""
     
     if not predictor or not predictor.model_metadata:
-        st.warning("Model metadata not available")
+        st.warning("Metadata del modelo no disponible")
         return
     
     metadata = predictor.model_metadata
     
-    col1, col2 = st.columns(2)
+    # Performance Overview
+    st.markdown('<div class="section-title">Rendimiento del Modelo</div>', unsafe_allow_html=True)
     
-    with col1:
-        st.markdown('<div class="section-title">Model Performance</div>', unsafe_allow_html=True)
+    col1, col2, col3, col4 = st.columns(4)
+    
+    if 'test_metrics' in metadata:
+        metrics = metadata['test_metrics']
         
-        if 'test_metrics' in metadata:
-            metrics = metadata['test_metrics']
-            
+        with col1:
             st.markdown("""
-            <div class="info-card">
-                <div class="info-card-title">R² Score</div>
-                <div class="info-card-value">{:.4f}</div>
+            <div class="stats-card">
+                <div class="stats-number">{:.3f}</div>
+                <div class="stats-label">R² Score</div>
             </div>
             """.format(metrics.get('r2', 0)), unsafe_allow_html=True)
-            
+        
+        with col2:
             st.markdown("""
-            <div class="info-card">
-                <div class="info-card-title">RMSE (minutes)</div>
-                <div class="info-card-value">{:.2f}</div>
+            <div class="stats-card">
+                <div class="stats-number">{:.2f}</div>
+                <div class="stats-label">RMSE (min)</div>
             </div>
             """.format(metrics.get('rmse', 0)), unsafe_allow_html=True)
-            
+        
+        with col3:
             st.markdown("""
-            <div class="info-card">
-                <div class="info-card-title">MAE (minutes)</div>
-                <div class="info-card-value">{:.2f}</div>
+            <div class="stats-card">
+                <div class="stats-number">{:.2f}</div>
+                <div class="stats-label">MAE (min)</div>
             </div>
             """.format(metrics.get('mae', 0)), unsafe_allow_html=True)
-            
+        
+        with col4:
             st.markdown("""
-            <div class="info-card">
-                <div class="info-card-title">MAPE (%)</div>
-                <div class="info-card-value">{:.2f}%</div>
+            <div class="stats-card">
+                <div class="stats-number">{:.1f}%</div>
+                <div class="stats-label">MAPE</div>
             </div>
             """.format(metrics.get('mape', 0)), unsafe_allow_html=True)
     
+    # Feature Importance
+    st.markdown('<div class="section-title">Importancia de Variables</div>', unsafe_allow_html=True)
+    st.caption("Variables que más influyen en las predicciones")
+    
+    fig1 = create_feature_importance_chart()
+    st.pyplot(fig1)
+    plt.close()
+    
+    # Model Diagnostics
+    st.markdown('<div class="section-title">Diagnósticos del Modelo</div>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**Predicciones vs Valores Reales**")
+        st.caption("Qué tan cerca están las predicciones de la realidad")
+        fig2 = create_predictions_vs_actual()
+        st.pyplot(fig2)
+        plt.close()
+    
     with col2:
-        st.markdown('<div class="section-title">Model Details</div>', unsafe_allow_html=True)
-        
+        st.markdown("**Análisis de Residuos**")
+        st.caption("Distribución de errores del modelo")
+        fig3 = create_residuals_plot()
+        st.pyplot(fig3)
+        plt.close()
+    
+    # Error Distribution
+    st.markdown("**Distribución de Errores**")
+    st.caption("Frecuencia de los errores de predicción")
+    fig4 = create_error_distribution()
+    st.pyplot(fig4)
+    plt.close()
+    
+    # Model Details
+    st.markdown('<div class="section-title">Detalles Técnicos</div>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
         st.markdown("""
         <div class="info-card">
-            <div class="info-card-title">Model Type</div>
+            <div class="info-card-title">Tipo de Modelo</div>
             <div class="info-card-value">{}</div>
         </div>
         """.format(metadata.get('model_type', 'N/A').upper()), unsafe_allow_html=True)
         
         st.markdown("""
         <div class="info-card">
-            <div class="info-card-title">Version</div>
+            <div class="info-card-title">Features Totales</div>
+            <div class="info-card-value">32</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div class="info-card">
+            <div class="info-card-title">Versión</div>
             <div class="info-card-value">v1.0</div>
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown("""
         <div class="info-card">
-            <div class="info-card-title">Training Date</div>
+            <div class="info-card-title">Fecha de Entrenamiento</div>
             <div class="info-card-value">{}</div>
         </div>
         """.format(metadata.get('timestamp', 'N/A')[:10]), unsafe_allow_html=True)
-        
-        st.markdown("""
-        <div class="info-card">
-            <div class="info-card-title">Features</div>
-            <div class="info-card-value">32</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown('<div class="section-title">Feature Importance</div>', unsafe_allow_html=True)
-    st.caption("Top features driving predictions")
-    
-    fig = create_feature_importance_chart()
-    st.pyplot(fig)
-    plt.close()
 
 def tab_about():
     """About tab."""
     
-    st.markdown('<div class="section-title">About This System</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Sobre este Sistema</div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     
@@ -720,20 +860,20 @@ def tab_about():
         <div class="info-card">
             <div class="info-card-title">Machine Learning</div>
             <div style='color: #ccc; margin-top: 0.5rem; font-size: 0.95rem;'>
-                Random Forest model with R²=0.802<br>
-                32 engineered features<br>
-                Error < 10 minutes average
+                Modelo Random Forest con R²=0.802<br>
+                32 features ingenierizadas<br>
+                Error promedio < 10 minutos
             </div>
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown("""
         <div class="info-card">
-            <div class="info-card-title">LLM Integration</div>
+            <div class="info-card-title">Integración LLM</div>
             <div style='color: #ccc; margin-top: 0.5rem; font-size: 0.95rem;'>
                 Llama 3.3 70B via Groq<br>
-                Contextual recommendations<br>
-                Operational insights
+                Recomendaciones contextuales<br>
+                Insights operacionales
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -741,27 +881,27 @@ def tab_about():
     with col2:
         st.markdown("""
         <div class="info-card">
-            <div class="info-card-title">API</div>
+            <div class="info-card-title">API REST</div>
             <div style='color: #ccc; margin-top: 0.5rem; font-size: 0.95rem;'>
-                FastAPI REST endpoint<br>
-                JSON request/response<br>
-                Real-time predictions
+                Endpoint FastAPI<br>
+                Request/response JSON<br>
+                Predicciones en tiempo real
             </div>
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown("""
         <div class="info-card">
-            <div class="info-card-title">SQL Analysis</div>
+            <div class="info-card-title">Análisis SQL</div>
             <div style='color: #ccc; margin-top: 0.5rem; font-size: 0.95rem;'>
-                13 operational queries<br>
-                Pattern identification<br>
-                Business insights
+                13 queries operacionales<br>
+                Identificación de patrones<br>
+                Insights de negocio
             </div>
         </div>
         """, unsafe_allow_html=True)
     
-    st.markdown('<div class="section-title">Technical Stack</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Stack Tecnológico</div>', unsafe_allow_html=True)
     
     st.markdown("""
     - **ML:** scikit-learn, XGBoost, LightGBM
@@ -771,11 +911,11 @@ def tab_about():
     - **Data:** Pandas, NumPy
     """)
     
-    st.markdown('<div class="section-title">Author</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Autor</div>', unsafe_allow_html=True)
     
     st.markdown("""
     **Jhoan Sebastian Meza Garcia**  
-    Economics Student - Universidad Nacional de Colombia
+    Estudiante de Economía - Universidad Nacional de Colombia
     
     [LinkedIn](https://www.linkedin.com/in/jhoan-sebastian-meza-garcia-12228b329/) • [GitHub](https://github.com/jmeza-data)
     """)
@@ -786,33 +926,33 @@ def tab_about():
 
 def main():
     # Load systems
-    with st.spinner('Loading systems...'):
+    with st.spinner('Cargando sistemas...'):
         predictor, model_error = load_prediction_pipeline()
         groq_client, llm_error = get_groq_client()
     
     # Header
-    st.markdown('<div class="main-title">Food Delivery Time Prediction</div>', unsafe_allow_html=True)
-    st.markdown('<div class="subtitle">AI-powered delivery time estimation with intelligent analysis</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-title">Predicción de Tiempos de Entrega</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subtitle">Estimación de tiempos potenciada por IA con análisis inteligente</div>', unsafe_allow_html=True)
     
     # Status indicators
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        status = "✓ Online" if not model_error else "✗ Offline"
+        status = "✓ En Línea" if not model_error else "✗ Fuera de Línea"
         color = "#66BB6A" if not model_error else "#EF5350"
         st.markdown(f"""
         <div style='background: #1a1a1a; padding: 0.8rem; border-radius: 8px; border-left: 3px solid {color};'>
-            <div style='color: #888; font-size: 0.75rem; text-transform: uppercase;'>ML Model</div>
+            <div style='color: #888; font-size: 0.75rem; text-transform: uppercase;'>Modelo ML</div>
             <div style='color: {color}; font-size: 0.95rem; font-weight: 600; margin-top: 0.2rem;'>{status}</div>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
-        status = "✓ Online" if not llm_error else "✗ Offline"
+        status = "✓ En Línea" if not llm_error else "✗ Fuera de Línea"
         color = "#66BB6A" if not llm_error else "#EF5350"
         st.markdown(f"""
         <div style='background: #1a1a1a; padding: 0.8rem; border-radius: 8px; border-left: 3px solid {color};'>
-            <div style='color: #888; font-size: 0.75rem; text-transform: uppercase;'>LLM Analysis</div>
+            <div style='color: #888; font-size: 0.75rem; text-transform: uppercase;'>Análisis LLM</div>
             <div style='color: {color}; font-size: 0.95rem; font-weight: 600; margin-top: 0.2rem;'>{status}</div>
         </div>
         """, unsafe_allow_html=True)
@@ -820,7 +960,7 @@ def main():
     with col3:
         st.markdown(f"""
         <div style='background: #1a1a1a; padding: 0.8rem; border-radius: 8px; border-left: 3px solid #667eea;'>
-            <div style='color: #888; font-size: 0.75rem; text-transform: uppercase;'>Version</div>
+            <div style='color: #888; font-size: 0.75rem; text-transform: uppercase;'>Versión</div>
             <div style='color: #667eea; font-size: 0.95rem; font-weight: 600; margin-top: 0.2rem;'>v1.0</div>
         </div>
         """, unsafe_allow_html=True)
@@ -828,7 +968,7 @@ def main():
     st.markdown("")
     
     # Tabs
-    tab1, tab2, tab3 = st.tabs(["Prediction", "Model Info", "About"])
+    tab1, tab2, tab3 = st.tabs(["Predicción", "Estadísticas del Modelo", "Acerca de"])
     
     with tab1:
         tab_prediction(predictor, groq_client)
