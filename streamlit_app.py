@@ -1,6 +1,6 @@
 """
 Streamlit App - Predicción de Tiempos de Entrega con Análisis IA
-Interfaz profesional con análisis personalizado para 3 actores
+Interfaz profesional con animaciones avanzadas
 """
 
 import streamlit as st
@@ -11,6 +11,7 @@ import seaborn as sns
 from pathlib import Path
 import sys
 import os
+import time
 
 # Groq for LLM
 try:
@@ -163,7 +164,7 @@ Reglas:
     return "Error: No se pudo conectar con LLM"
 
 # ============================================================================
-# CUSTOM CSS
+# CUSTOM CSS WITH ADVANCED ANIMATIONS
 # ============================================================================
 
 st.markdown("""
@@ -175,6 +176,80 @@ st.markdown("""
         max-width: 1200px;
     }
     
+    /* Keyframe Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+    
+    @keyframes shimmer {
+        0% {
+            background-position: -1000px 0;
+        }
+        100% {
+            background-position: 1000px 0;
+        }
+    }
+    
+    @keyframes countUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
     /* Headers */
     .main-title {
         font-size: 2.2rem;
@@ -182,12 +257,14 @@ st.markdown("""
         color: #FFFFFF;
         margin-bottom: 0.3rem;
         letter-spacing: -0.5px;
+        animation: fadeInUp 0.6s ease-out;
     }
     
     .subtitle {
         font-size: 1rem;
         color: #999;
         margin-bottom: 2rem;
+        animation: fadeInUp 0.8s ease-out;
     }
     
     .section-title {
@@ -196,9 +273,10 @@ st.markdown("""
         color: #FFFFFF;
         margin-top: 2rem;
         margin-bottom: 1rem;
+        animation: slideInLeft 0.5s ease-out;
     }
     
-    /* Prediction Card */
+    /* Prediction Card with Advanced Animation */
     .prediction-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 2.5rem;
@@ -206,12 +284,25 @@ st.markdown("""
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         margin: 2rem 0;
         text-align: center;
-        animation: fadeIn 0.5s ease-in;
+        animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        overflow: hidden;
     }
     
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+    .prediction-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to right,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,0.1) 50%,
+            rgba(255,255,255,0) 100%
+        );
+        animation: shimmer 3s infinite;
     }
     
     .prediction-value {
@@ -220,6 +311,9 @@ st.markdown("""
         color: white;
         margin: 0;
         letter-spacing: -2px;
+        animation: countUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        z-index: 1;
     }
     
     .prediction-label {
@@ -228,28 +322,39 @@ st.markdown("""
         margin-top: 0.5rem;
         text-transform: uppercase;
         letter-spacing: 1px;
+        position: relative;
+        z-index: 1;
+        animation: fadeInUp 1s ease-out;
     }
     
-    /* Metric Cards */
+    /* Metric Cards with Staggered Animation */
     .metric-container {
         background-color: #1a1a1a;
         padding: 1.2rem;
         border-radius: 12px;
         border: 1px solid #333;
         margin: 0.5rem 0;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        animation: fadeInUp 0.5s ease-out;
+        animation-fill-mode: both;
     }
+    
+    .metric-container:nth-child(1) { animation-delay: 0.1s; }
+    .metric-container:nth-child(2) { animation-delay: 0.2s; }
+    .metric-container:nth-child(3) { animation-delay: 0.3s; }
+    .metric-container:nth-child(4) { animation-delay: 0.4s; }
     
     .metric-container:hover {
         border-color: #667eea;
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
     }
     
     .metric-value {
         font-size: 1.8rem;
         font-weight: 600;
         color: #667eea;
+        animation: pulse 2s ease-in-out infinite;
     }
     
     .metric-label {
@@ -260,7 +365,7 @@ st.markdown("""
         margin-top: 0.3rem;
     }
     
-    /* LLM Analysis Boxes */
+    /* LLM Analysis Boxes with Slide-in Animation */
     .llm-section {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 1.3rem;
@@ -268,12 +373,40 @@ st.markdown("""
         margin: 1rem 0;
         color: white;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        animation: slideInRight 0.6s ease-out;
+        animation-fill-mode: both;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .llm-section:nth-child(1) { animation-delay: 0.2s; }
+    .llm-section:nth-child(2) { animation-delay: 0.4s; }
+    .llm-section:nth-child(3) { animation-delay: 0.6s; }
+    
+    .llm-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,0.1),
+            transparent
+        );
+        transition: left 0.5s;
+    }
+    
+    .llm-section:hover::before {
+        left: 100%;
     }
     
     .llm-section:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.35);
     }
     
     .llm-section-title {
@@ -292,7 +425,7 @@ st.markdown("""
         color: rgba(255,255,255,0.95);
     }
     
-    /* Buttons */
+    /* Buttons with Hover Animation */
     .stButton>button {
         background: linear-gradient(120deg, #667eea, #764ba2);
         color: white;
@@ -302,22 +435,43 @@ st.markdown("""
         font-size: 0.95rem;
         border-radius: 10px;
         width: 100%;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stButton>button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .stButton>button:hover::before {
+        width: 300px;
+        height: 300px;
     }
     
     .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
     }
     
-    /* Tabs */
+    /* Tabs with Smooth Transition */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
         background-color: #1a1a1a;
         padding: 0.5rem;
         border-radius: 10px;
+        animation: fadeInUp 0.7s ease-out;
     }
     
     .stTabs [data-baseweb="tab"] {
@@ -326,31 +480,39 @@ st.markdown("""
         color: #888;
         font-weight: 500;
         padding: 0.6rem 1.2rem;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     
     .stTabs [data-baseweb="tab"]:hover {
-        background-color: rgba(102, 126, 234, 0.1);
+        background-color: rgba(102, 126, 234, 0.15);
+        transform: translateY(-2px);
     }
     
     .stTabs [aria-selected="true"] {
         background-color: #667eea !important;
         color: white !important;
+        transform: scale(1.05);
     }
     
-    /* Info Cards */
+    /* Info Cards with Progressive Animation */
     .info-card {
         background-color: #1a1a1a;
         padding: 1.5rem;
         border-radius: 12px;
         border-left: 4px solid #667eea;
         margin: 1rem 0;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        animation: slideInLeft 0.5s ease-out;
+        animation-fill-mode: both;
     }
     
+    .info-card:nth-child(odd) { animation-delay: 0.1s; }
+    .info-card:nth-child(even) { animation-delay: 0.2s; }
+    
     .info-card:hover {
-        transform: translateX(5px);
+        transform: translateX(10px) scale(1.02);
         border-left-color: #764ba2;
+        box-shadow: -4px 0 12px rgba(102, 126, 234, 0.2);
     }
     
     .info-card-title {
@@ -367,7 +529,7 @@ st.markdown("""
         color: #FFFFFF;
     }
     
-    /* Stats Card */
+    /* Stats Card with Scale Animation */
     .stats-card {
         background-color: #1a1a1a;
         padding: 1.2rem;
@@ -375,18 +537,27 @@ st.markdown("""
         border: 1px solid #333;
         text-align: center;
         margin: 0.5rem 0;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        animation: scaleIn 0.5s ease-out;
+        animation-fill-mode: both;
     }
+    
+    .stats-card:nth-child(1) { animation-delay: 0.1s; }
+    .stats-card:nth-child(2) { animation-delay: 0.2s; }
+    .stats-card:nth-child(3) { animation-delay: 0.3s; }
+    .stats-card:nth-child(4) { animation-delay: 0.4s; }
     
     .stats-card:hover {
         border-color: #667eea;
-        transform: scale(1.03);
+        transform: scale(1.08);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
     }
     
     .stats-number {
         font-size: 2rem;
         font-weight: 700;
         color: #667eea;
+        animation: pulse 2s ease-in-out infinite;
     }
     
     .stats-label {
@@ -394,6 +565,17 @@ st.markdown("""
         color: #888;
         text-transform: uppercase;
         margin-top: 0.3rem;
+    }
+    
+    /* Loading Animation */
+    .stSpinner > div {
+        border-color: #667eea !important;
+        border-right-color: transparent !important;
+    }
+    
+    /* Smooth Transitions for All Elements */
+    * {
+        transition: opacity 0.3s ease, transform 0.3s ease;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -615,19 +797,46 @@ def tab_prediction(predictor, groq_client):
             "Courier_Experience_yrs": experience
         }
         
-        with st.spinner('Calculando...'):
-            if predictor:
-                predicted_time = predictor.predict_single(order)
+        # Progress bar animation
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        
+        for i in range(100):
+            time.sleep(0.01)
+            progress_bar.progress(i + 1)
+            if i < 30:
+                status_text.text('Analizando parámetros...')
+            elif i < 60:
+                status_text.text('Ejecutando modelo ML...')
             else:
-                predicted_time = (distance * 2.5 + prep_time + 
-                                (10 if traffic == "Alto" else 5 if traffic == "Medio" else 0) +
-                                (5 if weather in ["Lluvioso", "Nevado"] else 0) -
-                                (experience * 0.5))
+                status_text.text('Generando predicción...')
+        
+        if predictor:
+            predicted_time = predictor.predict_single(order)
+        else:
+            predicted_time = (distance * 2.5 + prep_time + 
+                            (10 if traffic == "Alto" else 5 if traffic == "Medio" else 0) +
+                            (5 if weather in ["Lluvioso", "Nevado"] else 0) -
+                            (experience * 0.5))
+        
+        progress_bar.empty()
+        status_text.empty()
         
         # Main prediction with emoji
         time_emoji = "⚡" if predicted_time < 30 else "🚗" if predicted_time < 50 else "🐌"
         
-        st.markdown("""
+        # Animated counter for time
+        time_placeholder = st.empty()
+        for i in range(int(predicted_time) + 1):
+            time_placeholder.markdown("""
+            <div class="prediction-card">
+                <div class="prediction-value">{} {:.1f} min</div>
+                <div class="prediction-label">Tiempo Estimado de Entrega</div>
+            </div>
+            """.format(time_emoji, i), unsafe_allow_html=True)
+            time.sleep(0.02)
+        
+        time_placeholder.markdown("""
         <div class="prediction-card">
             <div class="prediction-value">{} {:.1f} min</div>
             <div class="prediction-label">Tiempo Estimado de Entrega</div>
@@ -932,7 +1141,7 @@ def main():
         status = "✓ En Línea" if not model_error else "✗ Fuera de Línea"
         color = "#66BB6A" if not model_error else "#EF5350"
         st.markdown(f"""
-        <div style='background: #1a1a1a; padding: 0.8rem; border-radius: 8px; border-left: 3px solid {color};'>
+        <div style='background: #1a1a1a; padding: 0.8rem; border-radius: 8px; border-left: 3px solid {color}; animation: slideInLeft 0.5s ease-out;'>
             <div style='color: #888; font-size: 0.75rem; text-transform: uppercase;'>Modelo ML</div>
             <div style='color: {color}; font-size: 0.95rem; font-weight: 600; margin-top: 0.2rem;'>{status}</div>
         </div>
@@ -942,7 +1151,7 @@ def main():
         status = "✓ En Línea" if not llm_error else "✗ Fuera de Línea"
         color = "#66BB6A" if not llm_error else "#EF5350"
         st.markdown(f"""
-        <div style='background: #1a1a1a; padding: 0.8rem; border-radius: 8px; border-left: 3px solid {color};'>
+        <div style='background: #1a1a1a; padding: 0.8rem; border-radius: 8px; border-left: 3px solid {color}; animation: slideInLeft 0.6s ease-out;'>
             <div style='color: #888; font-size: 0.75rem; text-transform: uppercase;'>Análisis LLM</div>
             <div style='color: {color}; font-size: 0.95rem; font-weight: 600; margin-top: 0.2rem;'>{status}</div>
         </div>
@@ -950,7 +1159,7 @@ def main():
     
     with col3:
         st.markdown(f"""
-        <div style='background: #1a1a1a; padding: 0.8rem; border-radius: 8px; border-left: 3px solid #667eea;'>
+        <div style='background: #1a1a1a; padding: 0.8rem; border-radius: 8px; border-left: 3px solid #667eea; animation: slideInLeft 0.7s ease-out;'>
             <div style='color: #888; font-size: 0.75rem; text-transform: uppercase;'>Versión</div>
             <div style='color: #667eea; font-size: 0.95rem; font-weight: 600; margin-top: 0.2rem;'>v1.0</div>
         </div>
