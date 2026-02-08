@@ -105,7 +105,7 @@ Random Forest mostró mejor balance entre precisión, estabilidad y capacidad pa
 
 Pruébalo aquí: [food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app](https://food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app)
 
-*Nota: Puede tardar ~1 minuto en cargar inicialmente*
+*Nota: Puede tardar 1 minutito en cargar inicialmente, revisalo quedo muy chevre*
 
 ![Dashboard Principal](images/Opera.png)
 
@@ -375,11 +375,11 @@ Numéricos:
 ## Autor
 
 **Jhoan Sebastian Meza Garcia**  
-Estudiante de Economía - Universidad Nacional de Colombia
+Estudiante de Economía ! Universidad Nacional de Colombia
 
 [LinkedIn](https://www.linkedin.com/in/jhoan-sebastian-meza-garcia-12228b329/) • [GitHub](https://github.com/jmeza-data)
 
-**Otros proyectos:**
+**Gracias por llegar hasta aqui, tengo muchos proyectos chevres si quires revisar**
 - [Regresión IPM Continuo a Nivel de Hogar](https://github.com/jmeza-data) - XGBoost para predicción de IPM
 - [Análisis SHAP para Interpretabilidad](https://github.com/jmeza-data) - Explicabilidad en modelos ML
 - [Más repositorios...](https://github.com/jmeza-data?tab=repositories)
