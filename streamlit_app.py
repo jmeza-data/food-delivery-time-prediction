@@ -41,7 +41,7 @@ except Exception as e:
 
 st.set_page_config(
     page_title="Predicción de Tiempos de Entrega",
-    page_icon="📦",
+    page_icon="🚚",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
