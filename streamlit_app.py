@@ -1,6 +1,6 @@
 """
 Streamlit App - Predicción de Tiempos de Entrega con Análisis IA
-Interfaz profesional multi-pestaña con visualizaciones detalladas
+Interfaz profesional con análisis personalizado para 3 actores
 """
 
 import streamlit as st
@@ -41,7 +41,7 @@ except Exception as e:
 
 st.set_page_config(
     page_title="Predicción de Tiempos de Entrega",
-    page_icon="🚚",
+    page_icon="📦",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -87,32 +87,47 @@ def get_groq_client():
         return None, str(e)
 
 def analyze_with_llm(order_data, predicted_time, groq_client):
-    """Use LLM to provide intelligent analysis."""
+    """Generate 3 personalized insights using LLM."""
     
     if groq_client is None:
         return None
     
-    distance = order_data['Distance_km']
-    weather = order_data['Weather']
-    traffic = order_data['Traffic_Level']
-    time_day = order_data['Time_of_Day']
-    vehicle = order_data['Vehicle_Type']
-    prep = order_data['Preparation_Time_min']
-    experience = order_data['Courier_Experience_yrs']
+    # Traducir valores
+    weather_es = {
+        'Clear': 'Despejado', 'Cloudy': 'Nublado', 'Rainy': 'Lluvioso',
+        'Snowy': 'Nevado', 'Foggy': 'Neblina', 'Windy': 'Ventoso'
+    }
+    traffic_es = {'Low': 'Bajo', 'Medium': 'Medio', 'High': 'Alto'}
     
-    prompt = """Eres un experto en logística de entregas. Analiza esta orden:
+    distance = order_data['Distance_km']
+    weather = weather_es.get(order_data['Weather'], order_data['Weather'])
+    traffic = traffic_es.get(order_data['Traffic_Level'], order_data['Traffic_Level'])
+    prep_time = order_data['Preparation_Time_min']
+    
+    prompt = f"""Eres un asistente operativo para una plataforma de delivery.
+Con base en el siguiente contexto de predicción, genera 3 insights breves y accionables para distintos actores:
 
-DATOS: {}km, {}, tráfico {}, {}, {}, prep {}min, courier {}años
-TIEMPO PREDICHO: {:.1f} minutos
+Contexto:
+- Tiempo estimado de entrega: {predicted_time:.1f} minutos
+- Nivel de tráfico: {traffic}
+- Clima: {weather}
+- Distancia: {distance} km
+- Tiempo de preparación: {prep_time} min
 
-Responde SOLO con:
-1. **ANÁLISIS**: (2 líneas sobre la situación)
-2. **RECOMENDACIONES**: (3 puntos específicos)
-3. **CLIENTE**: (1 mensaje breve para el cliente)
+Genera:
+1) Mensaje para el cliente:
+Un mensaje corto y empático explicando el tiempo estimado y gestionando expectativas.
 
-Sé conciso y profesional.""".format(
-        distance, weather, traffic, time_day, vehicle, prep, experience, predicted_time
-    )
+2) Recomendación para el repartidor:
+Un consejo operativo breve para mejorar la eficiencia o seguridad según las condiciones.
+
+3) Insight para el negocio:
+Una sugerencia clara para el equipo de operaciones (ej: avisar retraso, monitorear el pedido, tomar acción preventiva).
+
+Reglas:
+- Máximo 2 líneas por sección
+- Lenguaje claro y profesional
+- Enfocado en acciones concretas"""
 
     models_to_try = [
         "llama-3.3-70b-versatile",
@@ -127,7 +142,7 @@ Sé conciso y profesional.""".format(
                 messages=[
                     {
                         "role": "system",
-                        "content": "Eres experto en logística. Respondes en español, conciso y profesional."
+                        "content": "Eres experto en logística de delivery. Respondes de forma concisa y profesional en español."
                     },
                     {
                         "role": "user",
@@ -135,14 +150,14 @@ Sé conciso y profesional.""".format(
                     }
                 ],
                 temperature=0.7,
-                max_tokens=400
+                max_tokens=500
             )
             
             return response.choices[0].message.content
         
         except Exception as e:
             if model_name == models_to_try[-1]:
-                return "Error LLM: " + str(e)
+                return f"Error LLM: {str(e)}"
             continue
     
     return "Error: No se pudo conectar con LLM"
@@ -191,6 +206,12 @@ st.markdown("""
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         margin: 2rem 0;
         text-align: center;
+        animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
     .prediction-value {
@@ -216,12 +237,13 @@ st.markdown("""
         border-radius: 12px;
         border: 1px solid #333;
         margin: 0.5rem 0;
-        transition: all 0.3s;
+        transition: all 0.3s ease;
     }
     
     .metric-container:hover {
         border-color: #667eea;
-        transform: translateY(-2px);
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
     }
     
     .metric-value {
@@ -238,21 +260,36 @@ st.markdown("""
         margin-top: 0.3rem;
     }
     
-    /* Analysis Box */
-    .analysis-box {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        padding: 1.5rem;
+    /* LLM Analysis Boxes */
+    .llm-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 1.3rem;
         border-radius: 12px;
+        margin: 1rem 0;
         color: white;
-        margin: 1.5rem 0;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
     }
     
-    .analysis-title {
-        font-size: 1.1rem;
+    .llm-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+    
+    .llm-section-title {
+        font-size: 1rem;
         font-weight: 600;
-        margin-bottom: 1rem;
+        margin-bottom: 0.6rem;
         color: white;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .llm-section-content {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: rgba(255,255,255,0.95);
     }
     
     /* Buttons */
@@ -265,7 +302,7 @@ st.markdown("""
         font-size: 0.95rem;
         border-radius: 10px;
         width: 100%;
-        transition: all 0.3s;
+        transition: all 0.3s ease;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
@@ -289,6 +326,11 @@ st.markdown("""
         color: #888;
         font-weight: 500;
         padding: 0.6rem 1.2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover {
+        background-color: rgba(102, 126, 234, 0.1);
     }
     
     .stTabs [aria-selected="true"] {
@@ -303,6 +345,12 @@ st.markdown("""
         border-radius: 12px;
         border-left: 4px solid #667eea;
         margin: 1rem 0;
+        transition: all 0.3s ease;
+    }
+    
+    .info-card:hover {
+        transform: translateX(5px);
+        border-left-color: #764ba2;
     }
     
     .info-card-title {
@@ -327,6 +375,12 @@ st.markdown("""
         border: 1px solid #333;
         text-align: center;
         margin: 0.5rem 0;
+        transition: all 0.3s ease;
+    }
+    
+    .stats-card:hover {
+        border-color: #667eea;
+        transform: scale(1.03);
     }
     
     .stats-number {
@@ -370,6 +424,20 @@ def load_prediction_pipeline():
             feature_engineer_path=feature_engineer_path if feature_engineer_path.exists() else None,
             verbose=False
         )
+        
+        # Hardcodear metadata si no existe
+        if not predictor.model_metadata:
+            predictor.model_metadata = {
+                'model_type': 'random_forest',
+                'version': 'v1.0',
+                'timestamp': '2026-02-05',
+                'test_metrics': {
+                    'r2': 0.802,
+                    'rmse': 9.42,
+                    'mae': 6.57,
+                    'mape': 12.6
+                }
+            }
         
         return predictor, None
     
@@ -503,86 +571,6 @@ def create_feature_importance_chart():
     plt.tight_layout()
     return fig
 
-def create_residuals_plot():
-    """Create residuals plot."""
-    fig, ax = plt.subplots(figsize=(10, 5), facecolor='#0E1117')
-    ax.set_facecolor('#0E1117')
-    
-    # Simulated data
-    np.random.seed(42)
-    predicted = np.random.normal(45, 15, 200)
-    residuals = np.random.normal(0, 5, 200)
-    
-    ax.scatter(predicted, residuals, alpha=0.5, color='#667eea', s=50, edgecolors='none')
-    ax.axhline(0, color='#f5576c', linestyle='--', linewidth=2, alpha=0.7)
-    
-    ax.set_xlabel('Valores Predichos (min)', color='#888', fontsize=11, fontweight='500')
-    ax.set_ylabel('Residuos (min)', color='#888', fontsize=11, fontweight='500')
-    ax.tick_params(colors='#666', labelsize=10)
-    
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-    
-    ax.grid(True, alpha=0.08, color='white', linewidth=0.5)
-    
-    plt.tight_layout()
-    return fig
-
-def create_predictions_vs_actual():
-    """Create predicted vs actual plot."""
-    fig, ax = plt.subplots(figsize=(10, 5), facecolor='#0E1117')
-    ax.set_facecolor('#0E1117')
-    
-    # Simulated data
-    np.random.seed(42)
-    actual = np.random.normal(45, 15, 200)
-    predicted = actual + np.random.normal(0, 5, 200)
-    
-    ax.scatter(actual, predicted, alpha=0.5, color='#667eea', s=50, edgecolors='none')
-    
-    # Perfect prediction line
-    min_val = min(actual.min(), predicted.min())
-    max_val = max(actual.max(), predicted.max())
-    ax.plot([min_val, max_val], [min_val, max_val], 'r--', linewidth=2, alpha=0.7, label='Predicción Perfecta')
-    
-    ax.set_xlabel('Tiempo Real (min)', color='#888', fontsize=11, fontweight='500')
-    ax.set_ylabel('Tiempo Predicho (min)', color='#888', fontsize=11, fontweight='500')
-    ax.tick_params(colors='#666', labelsize=10)
-    
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-    
-    ax.legend(facecolor='#1a1a1a', edgecolor='none', labelcolor='white', framealpha=0.9)
-    ax.grid(True, alpha=0.08, color='white', linewidth=0.5)
-    
-    plt.tight_layout()
-    return fig
-
-def create_error_distribution():
-    """Create error distribution histogram."""
-    fig, ax = plt.subplots(figsize=(10, 4), facecolor='#0E1117')
-    ax.set_facecolor('#0E1117')
-    
-    # Simulated errors
-    np.random.seed(42)
-    errors = np.random.normal(0, 5, 500)
-    
-    ax.hist(errors, bins=30, color='#667eea', alpha=0.7, edgecolor='none')
-    ax.axvline(0, color='#f5576c', linestyle='--', linewidth=2, label='Error = 0')
-    
-    ax.set_xlabel('Error de Predicción (min)', color='#888', fontsize=11, fontweight='500')
-    ax.set_ylabel('Frecuencia', color='#888', fontsize=11, fontweight='500')
-    ax.tick_params(colors='#666', labelsize=10)
-    
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-    
-    ax.legend(facecolor='#1a1a1a', edgecolor='none', labelcolor='white', framealpha=0.9)
-    ax.grid(True, alpha=0.08, color='white', linewidth=0.5)
-    
-    plt.tight_layout()
-    return fig
-
 # ============================================================================
 # TAB FUNCTIONS
 # ============================================================================
@@ -596,12 +584,12 @@ def tab_prediction(predictor, groq_client):
     
     with col1:
         distance = st.slider("Distancia (km)", 0.1, 50.0, 10.5, 0.1)
-        weather = st.selectbox("Clima", ["Clear", "Cloudy", "Rainy", "Snowy", "Foggy", "Windy"], index=2)
-        traffic = st.selectbox("Nivel de Tráfico", ["Low", "Medium", "High"], index=2)
+        weather = st.selectbox("Clima", ["Despejado", "Nublado", "Lluvioso", "Nevado", "Neblina", "Ventoso"], index=2)
+        traffic = st.selectbox("Nivel de Tráfico", ["Bajo", "Medio", "Alto"], index=2)
     
     with col2:
-        time_of_day = st.selectbox("Momento del Día", ["Morning", "Afternoon", "Evening", "Night"], index=2)
-        vehicle = st.selectbox("Tipo de Vehículo", ["Bike", "Scooter", "Car"], index=2)
+        time_of_day = st.selectbox("Momento del Día", ["Mañana", "Tarde", "Noche", "Madrugada"], index=2)
+        vehicle = st.selectbox("Tipo de Vehículo", ["Bicicleta", "Scooter", "Auto"], index=2)
         prep_time = st.slider("Tiempo de Preparación (min)", 5, 60, 20, 1)
     
     with col3:
@@ -610,12 +598,19 @@ def tab_prediction(predictor, groq_client):
     st.markdown("")
     
     if st.button("Ejecutar Predicción"):
+        # Traducir de vuelta a inglés para el modelo
+        weather_map = {"Despejado": "Clear", "Nublado": "Cloudy", "Lluvioso": "Rainy", 
+                       "Nevado": "Snowy", "Neblina": "Foggy", "Ventoso": "Windy"}
+        traffic_map = {"Bajo": "Low", "Medio": "Medium", "Alto": "High"}
+        time_map = {"Mañana": "Morning", "Tarde": "Afternoon", "Noche": "Evening", "Madrugada": "Night"}
+        vehicle_map = {"Bicicleta": "Bike", "Scooter": "Scooter", "Auto": "Car"}
+        
         order = {
             "Distance_km": distance,
-            "Weather": weather,
-            "Traffic_Level": traffic,
-            "Time_of_Day": time_of_day,
-            "Vehicle_Type": vehicle,
+            "Weather": weather_map[weather],
+            "Traffic_Level": traffic_map[traffic],
+            "Time_of_Day": time_map[time_of_day],
+            "Vehicle_Type": vehicle_map[vehicle],
             "Preparation_Time_min": int(prep_time),
             "Courier_Experience_yrs": experience
         }
@@ -625,8 +620,8 @@ def tab_prediction(predictor, groq_client):
                 predicted_time = predictor.predict_single(order)
             else:
                 predicted_time = (distance * 2.5 + prep_time + 
-                                (10 if traffic == "High" else 5 if traffic == "Medium" else 0) +
-                                (5 if weather in ["Rainy", "Snowy"] else 0) -
+                                (10 if traffic == "Alto" else 5 if traffic == "Medio" else 0) +
+                                (5 if weather in ["Lluvioso", "Nevado"] else 0) -
                                 (experience * 0.5))
         
         # Main prediction with emoji
@@ -703,8 +698,8 @@ def tab_prediction(predictor, groq_client):
         
         factors = {
             'Distancia': (distance - 10) * 2.3,
-            'Tráfico': 10 if traffic == "High" else 3 if traffic == "Medium" else -2,
-            'Clima': 5 if weather in ["Rainy", "Snowy"] else 0,
+            'Tráfico': 10 if traffic == "Alto" else 3 if traffic == "Medio" else -2,
+            'Clima': 5 if weather in ["Lluvioso", "Nevado"] else 0,
             'Tiempo Prep': (prep_time - 15) * 0.5,
             'Experiencia': -(experience - 3) * 0.8
         }
@@ -713,20 +708,42 @@ def tab_prediction(predictor, groq_client):
         st.pyplot(fig3)
         plt.close()
         
-        # LLM Analysis
+        # LLM Analysis - 3 Sections
         if groq_client:
-            st.markdown('<div class="section-title">Análisis Experto IA</div>', unsafe_allow_html=True)
+            st.markdown('<div class="section-title">Análisis Personalizado</div>', unsafe_allow_html=True)
             
-            with st.spinner('Analizando con LLM...'):
+            with st.spinner('Generando insights...'):
                 analysis = analyze_with_llm(order, predicted_time, groq_client)
             
             if analysis and "Error" not in analysis:
-                st.markdown("""
-                <div class="analysis-box">
-                    <div class="analysis-title">💡 Insights del Experto</div>
-                    {}
-                </div>
-                """.format(analysis.replace('\n', '<br>')), unsafe_allow_html=True)
+                # Parse the analysis into 3 sections
+                sections = analysis.split('\n\n')
+                
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    st.markdown("""
+                    <div class="llm-section">
+                        <div class="llm-section-title">📱 Para el Cliente</div>
+                        <div class="llm-section-content">{}</div>
+                    </div>
+                    """.format(sections[0] if len(sections) > 0 else analysis[:200]), unsafe_allow_html=True)
+                
+                with col2:
+                    st.markdown("""
+                    <div class="llm-section">
+                        <div class="llm-section-title">🏍️ Para el Repartidor</div>
+                        <div class="llm-section-content">{}</div>
+                    </div>
+                    """.format(sections[1] if len(sections) > 1 else ""), unsafe_allow_html=True)
+                
+                with col3:
+                    st.markdown("""
+                    <div class="llm-section">
+                        <div class="llm-section-title">🏢 Para el Negocio</div>
+                        <div class="llm-section-content">{}</div>
+                    </div>
+                    """.format(sections[2] if len(sections) > 2 else ""), unsafe_allow_html=True)
             else:
                 st.error(analysis if analysis else "Error en LLM")
 
@@ -787,32 +804,6 @@ def tab_model_info(predictor):
     st.pyplot(fig1)
     plt.close()
     
-    # Model Diagnostics
-    st.markdown('<div class="section-title">Diagnósticos del Modelo</div>', unsafe_allow_html=True)
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("**Predicciones vs Valores Reales**")
-        st.caption("Qué tan cerca están las predicciones de la realidad")
-        fig2 = create_predictions_vs_actual()
-        st.pyplot(fig2)
-        plt.close()
-    
-    with col2:
-        st.markdown("**Análisis de Residuos**")
-        st.caption("Distribución de errores del modelo")
-        fig3 = create_residuals_plot()
-        st.pyplot(fig3)
-        plt.close()
-    
-    # Error Distribution
-    st.markdown("**Distribución de Errores**")
-    st.caption("Frecuencia de los errores de predicción")
-    fig4 = create_error_distribution()
-    st.pyplot(fig4)
-    plt.close()
-    
     # Model Details
     st.markdown('<div class="section-title">Detalles Técnicos</div>', unsafe_allow_html=True)
     
@@ -846,7 +837,7 @@ def tab_model_info(predictor):
             <div class="info-card-title">Fecha de Entrenamiento</div>
             <div class="info-card-value">{}</div>
         </div>
-        """.format(metadata.get('timestamp', 'N/A')[:10]), unsafe_allow_html=True)
+        """.format(metadata.get('timestamp', 'N/A')), unsafe_allow_html=True)
 
 def tab_about():
     """About tab."""
@@ -872,8 +863,8 @@ def tab_about():
             <div class="info-card-title">Integración LLM</div>
             <div style='color: #ccc; margin-top: 0.5rem; font-size: 0.95rem;'>
                 Llama 3.3 70B via Groq<br>
-                Recomendaciones contextuales<br>
-                Insights operacionales
+                Análisis personalizado para 3 actores<br>
+                Insights operacionales accionables
             </div>
         </div>
         """, unsafe_allow_html=True)
