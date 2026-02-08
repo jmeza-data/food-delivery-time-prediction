@@ -1,11 +1,11 @@
 <div align="center">
-  
+
 # Food Delivery Time Prediction System
 
 </div>
 
 <div align="center">
-  
+
 ![SQL](https://img.shields.io/badge/SQL-Analysis-orange?logo=microsoftsqlserver&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.28-FF4B4B?logo=streamlit&logoColor=white)
@@ -13,67 +13,60 @@
 ![R² Score](https://img.shields.io/badge/R²-0.802-brightgreen?logo=google-analytics&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-Production--Ready-success)
 
-**Sistema de predicción de tiempos de entrega con 80% de precisión usando Random Forest e integración con LLM.**
+Sistema de predicción de tiempos de entrega con 80% de precisión usando Random Forest e integración con LLM.
 
-[🚀 Demo en Vivo](https://food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app) • [📖 Documentación](https://github.com/jmeza-data/food-delivery-time-prediction) • [📊 API Docs](http://localhost:8000/docs)
+[Demo en Vivo](https://food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app) • [Documentación](https://github.com/jmeza-data/food-delivery-time-prediction)
 
 </div>
 
 ---
 
-
 ## Descripción General
+
 
 Este proyecto aborda un desafío crítico en la logística urbana: predecir con precisión los tiempos de entrega de pedidos de comida. La solución combina análisis SQL operacional con machine learning y despliegue en producción.
 El componente de SQL identifica patrones de negocio, rutas problemáticas y factores operacionales mediante queries sobre un modelo relacional de 4 tablas. El modelo de ML (Random Forest con R²=0.802) predice tiempos en tiempo real, mientras que la integración con LLM proporciona recomendaciones contextualizadas. Además de estimar tiempos de entrega, la solución permite identificar las variables que más influyen en los retrasos y aporta insights relevantes tanto para la operación logística del negocio como para la experiencia del cliente.
+ contextualizadas para operaciones y comunicación con clientes.
 
 ---
 
-## Características Principales
+## Componentes del Sistema
 
 **Machine Learning**
 - Modelo Random Forest con R²=0.802
-- 32 features 
-- Error promedio <10 minutos
-- Maneja 7 variables de entrada
+- 32 features derivadas de 7 variables base
+- Error promedio menor a 10 minutos
+- Pipeline completo de preprocesamiento y entrenamiento
 
 **API REST**
 - FastAPI con documentación Swagger
-- Validación y health checks
-- Request/response en JSON
+- Validación de datos con Pydantic
+- Endpoints para predicción y monitoreo
 
 **Dashboard Interactivo**
 - Predicciones en tiempo real
-- Análisis visual 
+- Visualizaciones de distribución y factores de impacto
 - Métricas de desempeño del modelo
-- Análisis de factores de impacto
-
-**Integración con LLM**
-- Insights potenciados por Groq
-- Recomendaciones contextualizadas
-- Templates de comunicación al cliente
-- Modelo usado Llama 3.3 70B, lo use porque los tokens son gratis y genera un plus en el analisis.
+- Análisis potenciado por LLM
 
 **Análisis SQL**
-- Queries para análisis operacional
-- Identificación de patrones y tendencias
-- Insights de negocio accionables
-- Modelo relacional documentado
+- 13 queries (5 requeridas + 8 análisis adicionales)
+- Identificación de patrones temporales y rutas problemáticas
+- Insights operacionales documentados
 
 ---
 
-## Impacto en el Negocio
+## Resultados
 
-| Métrica | Resultado |
-|---------|-----------|
-| **R²** | 0.802 |
-| **MAE** | ~9.4 minutos |
-| **Tiempo de respuesta API** | <100 ms |
-| **Features creadas** | 30+ variables derivadas |
-| **Modelos evaluados** | LightGBM, XGBoost, Random Forest |
-| **Modelo final** | Random Forest |
+| Métrica | Valor |
+|---------|-------|
+| R² Score | 0.802 |
+| RMSE | 9.42 minutos |
+| MAE | 6.57 minutos |
+| MAPE | 12.6% |
+| Tiempo respuesta API | <100ms |
 
-**Innovación de mi parte:** Hice una variable derivada que combina la distancia y el tiempo de preparación (Estimated_Base_Time = distancia × 2 + tiempo_prep) la cual se consolidó como uno de los predictores más influyentes del modelo.
+**Decisión técnica destacada:** Creé la variable `Estimated_Base_Time = (Distance × 2) + Prep_Time` que se convirtió en el predictor más importante del modelo (importance = 0.232). Esto demuestra que el conocimiento de dominio puede superar features más complejas.
 
 ---
 
@@ -81,21 +74,13 @@ El componente de SQL identifica patrones de negocio, rutas problemáticas y fact
 
 ![Comparación de Modelos](images/model-comparison.png)
 
-**Random Forest superó a los competidores:**
-- RMSE: 9.42 min (vs 10.27 LightGBM, 10.64 XGBoost)
-- R² Score: 0.802 (vs 0.765 LightGBM, 0.747 XGBoost)
+Probé tres algoritmos y Random Forest superó a los demás:
+
+- RMSE: 9.42 min vs 10.27 (LightGBM) vs 10.64 (XGBoost)
+- R² Score: 0.802 vs 0.765 (LightGBM) vs 0.747 (XGBoost)
 - Tiempo de entrenamiento: 4.7 segundos
-- Análisis de importancia de features incluido
 
-### Métricas Clave
-```
-R² Score:  0.802  (80% de varianza explicada)
-RMSE:      9.42   (error promedio en minutos)
-MAE:       6.57   (error absoluto mediano)
-MAPE:      12.6%  (error porcentual)
-```
-
-Random Forest fue elegido como modelo final al obtener el mejor desempeño general en las métricas clave. Presentó el menor RMSE (9.42 min) y el mayor R² (0.802), superando consistentemente a LightGBM y XGBoost. Además de su precisión, mostró buena estabilidad, capacidad para capturar relaciones no lineales y una interpretación clara mediante la importancia de variables, lo que lo hace adecuado para un entorno operativo.
+Random Forest mostró mejor balance entre precisión, estabilidad y capacidad para capturar relaciones no lineales.
 
 ---
 
@@ -105,37 +90,30 @@ Random Forest fue elegido como modelo final al obtener el mejor desempeño gener
   <img src="https://skillicons.dev/icons?i=python,fastapi,sklearn,github,vscode" />
 </p>
 
-**Tecnologías Core**
-- ML Framework: scikit-learn, XGBoost, LightGBM
+- ML: scikit-learn, XGBoost, LightGBM
 - API: FastAPI, Uvicorn, Pydantic
 - Frontend: Streamlit, Matplotlib, Seaborn
 - LLM: Groq (Llama 3.3 70B)
-- Base de Datos: SQL Server (análisis)
+- Base de Datos: SQL Server
 - Herramientas: Pandas, NumPy, Joblib
-
-**Prácticas de Desarrollo**
-- Arquitectura de código modular
-- Manejo integral de errores
-- Documentación de API 
-- Control de versiones 
 
 ---
 
-## Demo en Vivo
+## Demo
 
 ### Dashboard Streamlit
 
-**Pruébalo:** [https://food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app](https://food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app)
+Pruébalo aquí: [food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app](https://food-delivery-time-prediction-z3c8fxrjyqn3nbwe784grg.streamlit.app)
 
-**(Puede que se demore 1 minutito, dejalo cargando quedo muy bonito para que revises)**
+*Nota: Puede tardar ~1 minuto en cargar inicialmente*
 
 ![Dashboard Principal](images/Opera.png)
 
-**Características:**
-- Sliders interactivos para parámetros de entrega
-- Predicciones en tiempo real con niveles de confianza
-- Análisis visual: gráficos de distribución, gauge y factores de impacto
-- Recomendaciones potenciadas por IA
+Funcionalidades:
+- Sliders interactivos para configurar parámetros de entrega
+- Predicción en tiempo real con nivel de confianza
+- Gráficos de distribución histórica y factores de impacto
+- Análisis contextual generado por LLM
 
 ---
 
@@ -143,31 +121,33 @@ Random Forest fue elegido como modelo final al obtener el mejor desempeño gener
 
 ![Análisis Visual](images/Streamlit_p2.png)
 
-El dashboard proporciona:
-- **Análisis de Distribución:** Dónde cae tu predicción vs datos históricos
-- **Gauge de Tiempo:** Representación visual de la velocidad de entrega
-- **Factores de Impacto:** Qué está afectando más el tiempo de entrega
+El dashboard muestra:
+- Análisis de Distribución: comparación de la predicción vs datos históricos
+- Gauge de Tiempo: representación visual de la velocidad estimada
+- Factores de Impacto: variables que más afectan el tiempo de entrega
 
 ---
 
-### Insights Potenciados por LLM
+### Insights con LLM
 
 ![Análisis LLM](images/streamlit_p5.png)
 
-Llama 3.3 70B de Groq proporciona:
-- Análisis contextual de la situación
-- Recomendaciones accionables para operaciones
-- Templates de comunicación al cliente
+El LLM (Llama 3.3 70B de Groq) genera:
+- Análisis contextual de cada predicción
+- Recomendaciones operacionales
+- Sugerencias de comunicación al cliente
+
+Decidí usar Groq porque tiene tokens gratuitos y agrega valor sin costo adicional al sistema.
 
 ---
 
-### REST API
+### API REST
 
 ![API Swagger UI](images/Food_API.png)
 
-**Documentación interactiva en `/docs`**
+Documentación interactiva disponible en `/docs`
 
-#### Ejemplo de Llamada a la API
+**Ejemplo de uso:**
 
 ![Ejemplo API](images/ejemplo.png)
 ```bash
@@ -184,7 +164,7 @@ curl -X POST "http://localhost:8000/predict" \
   }'
 ```
 
-**Respuesta:**
+Respuesta:
 ```json
 {
   "predicted_delivery_time_minutes": 67.3,
@@ -201,119 +181,108 @@ curl -X POST "http://localhost:8000/predict" \
 
 ![Modelo de Base de Datos](images/diagrama.png)
 
-El diseño de la base de datos captura la operación completa del sistema de entregas con 4 tablas principales conectadas mediante foreign keys.
+El diseño captura la operación completa con 4 tablas:
 
-**Relaciones:**
-- Un `DELIVERY_PERSON` realiza muchas `DELIVERIES` (1:N)
-- Un `RESTAURANT` prepara muchas `ORDERS` (1:N)
-- Una `DELIVERY` contiene muchas `ORDERS` (1:N)
+- DELIVERY_PERSONS: información de repartidores
+- RESTAURANTS: catálogo de restaurantes
+- DELIVERIES: registro de entregas
+- ORDERS: órdenes individuales
 
-### Queries Implementadas
+Relaciones: Un repartidor realiza muchas entregas (1:N), un restaurante prepara muchas órdenes (1:N), una entrega contiene muchas órdenes (1:N).
 
-El proyecto incluye análisis SQL completo en la carpeta `SQL/`:
+### Queries y Análisis
+
+Carpeta `SQL/` contiene:
 
 **5 Queries Principales:**
-1. **Top 5 áreas con mayor tiempo de entrega** (últimos 30 días)
-2. **Tiempo promedio por tráfico, área y tipo de cocina**
-3. **Top 10 couriers más rápidos** (mínimo 50 entregas activas)
-4. **Área de restaurante más rentable** (últimos 3 meses)
-5. **Couriers con tendencia creciente en tiempos de entrega**
+1. Top 5 áreas con mayor tiempo de entrega (últimos 30 días)
+2. Tiempo promedio por tráfico, área y tipo de cocina
+3. Top 10 couriers más rápidos (mínimo 50 entregas activas)
+4. Área de restaurante más rentable (últimos 3 meses)
+5. Couriers con tendencia creciente en tiempos
 
 **8 Análisis Adicionales:**
-- Patrones temporales de demanda (horas pico)
-- Impacto del clima en eficiencia operativa
-- Identificación de rutas problemáticas
-- Correlación experiencia vs desempeño
-- Factores que afectan satisfacción del cliente
+- Patrones temporales de demanda
+- Impacto del clima en eficiencia
+- Rutas problemáticas
+- Experiencia vs desempeño
+- Factores de satisfacción del cliente
 - Rentabilidad por tipo de cocina
-- Detección de anomalías en entregas
-- Optimización de tamaño de flota
+- Detección de anomalías
+- Optimización de flota
 
-Ver análisis completo en: [`SQL/sql_insights.md`](SQL/sql_insights.md)
+Ver detalles en: [`SQL/sql_insights.md`](SQL/sql_insights.md)
 
-### Insights SQL Destacados
+### Hallazgos SQL
 
-Los análisis revelaron que las horas pico (12-14h y 19-21h) son altamente predecibles. El clima adverso incrementa tiempos en 15-20%. Los couriers con más de 2 años de experiencia son 15% más rápidos. El rating del cliente cae drásticamente cuando el tiempo supera 60 minutos.
+Los análisis revelaron patrones claros: horas pico de 12-14h y 19-21h son altamente predecibles. Clima adverso incrementa tiempos en 15-20%. Couriers con más de 2 años de experiencia son 15% más rápidos. El rating cae drásticamente cuando el tiempo supera 60 minutos.
 
-Identifiqué rutas específicas consistentemente lentas y tipos de cocina con mejor rentabilidad por minuto. El análisis de fleet size mostró que el ratio óptimo es 3-4 entregas por courier por hora.
-
----
-
-## Insights Estratégicos
-
-### Decisiones Clave
-
-**Feature Engineering sobre Modelos Complejos**
-
-Diseñe la variable `Estimated_Base_Time = (Distance × 2) + Prep_Time`, que se convirtió en la feature más importante (importance = 0.232)
-
-**Enfoque API + Dashboard**
-
-Implemente una API para integración de sistemas y dashboard para equipo de operaciones y demos la cual cubre necesidades técnicas y de negocio.
-
-**Integración LLM para Contexto**
-
-Las predicciones son números pero las decisiones necesitan contexto, por eso el LLM proporciona recomendaciones accionables y mejora la comunicación con clientes.
-
-### Desafíos Resueltos
-
-- **Subestimación en días lluviosos:** Propuse features de interacción y mejoras en granularidad de datos
-- **Transferibilidad entre ciudades:** Diseñé enfoque de 3 fases con transfer learning
-- **Preparación para producción:** Documenté arquitectura completa de deployment
-
-Ver análisis estratégico completo en: [`reports/strategic_reflections.md`](reports/strategic_reflections.md)
+Identifiqué rutas específicas consistentemente lentas y tipos de cocina con mejor rentabilidad por minuto. El ratio óptimo es 3-4 entregas por courier por hora.
 
 ---
 
-## Inicio Rápido
+## Decisiones Técnicas
 
-### Prerequisitos
+**Feature Engineering**
 
-- Python 3.10+
+Diseñé `Estimated_Base_Time = (Distance × 2) + Prep_Time` que se convirtió en la feature más importante. Esto demuestra que el conocimiento de dominio simple puede superar features más complejas.
 
-### Instalación
+**Arquitectura API + Dashboard**
 
-1. **Clonar el repositorio**
+Implementé dos interfaces: API para integración con sistemas existentes (apps móviles, herramientas internas) y dashboard para equipo de operaciones y demos. Esto cubre necesidades técnicas y de negocio.
+
+**Integración LLM**
+
+Las predicciones numéricas necesitan contexto para tomar decisiones. El LLM genera recomendaciones accionables y mejora la comunicación con clientes.
+
+**Desafíos**
+
+- Subestimación en días lluviosos: propuse features de interacción y mejoras en granularidad de datos
+- Transferibilidad entre ciudades: diseñé enfoque de 3 fases con transfer learning
+- Preparación para producción: documenté arquitectura completa de deployment
+
+Ver análisis completo en: [`reports/strategic_reflections.md`](reports/strategic_reflections.md)
+
+---
+
+## Instalación y Uso
+
+**Prerequisitos:** Python 3.10+
+
+**Clonar repositorio:**
 ```bash
 git clone https://github.com/jmeza-data/food-delivery-time-prediction.git
 cd food-delivery-time-prediction
 ```
 
-2. **Instalar dependencias**
+**Instalar dependencias:**
 ```bash
 pip install -r requirements.txt
 ```
 
-### Ejecutar el Pipeline ML
-
-Entrenar los modelos desde cero:
+**Entrenar modelos:**
 ```bash
 python model_pipeline/run_pipeline.py
 ```
 
-Esto:
-- Carga y preprocesa los datos
-- Ingenieriza 32 features
-- Entrena 3 modelos (Random Forest, LightGBM, XGBoost)
-- Guarda el mejor modelo en `models/`
-- Genera reporte de comparación en `reports/`
+Este comando carga datos, crea 32 features, entrena 3 modelos, guarda el mejor y genera reporte de comparación.
 
-### Ejecutar la API
+**Ejecutar API:**
 ```bash
 cd api
 python main.py
 ```
 
-La API estará disponible en:
-- **Swagger UI:** http://localhost:8000/docs
-- **Health check:** http://localhost:8000/health
+Disponible en:
+- Swagger UI: http://localhost:8000/docs
+- Health check: http://localhost:8000/health
 
-### Ejecutar el Dashboard
+**Ejecutar Dashboard:**
 ```bash
 streamlit run streamlit_app.py
 ```
 
-El dashboard se abrirá en: http://localhost:8501
+Se abrirá en: http://localhost:8501
 
 ---
 
@@ -321,66 +290,58 @@ El dashboard se abrirá en: http://localhost:8501
 ```
 food-delivery-time-prediction/
 │
-├── SQL/                         # Análisis SQL
-│   ├── sql_queries.sql          # 5 queries principales
-│   └── sql_insights.md          # 8 análisis adicionales
+├── SQL/
+│   ├── sql_queries.sql
+│   └── sql_insights.md
 │
-├── model_pipeline/              # Módulos del pipeline ML
-│   ├── config.py                # Configuración
-│   ├── data_loader.py           # Carga de datos
-│   ├── preprocessor.py          # Limpieza y encoding
-│   ├── feature_engineer.py      # 32 features ingenierizadas
-│   ├── model_trainer.py         # Entrenamiento y comparación
-│   ├── predictor.py             # Interface de predicción
-│   └── run_pipeline.py          # Script principal
+├── model_pipeline/
+│   ├── config.py
+│   ├── data_loader.py
+│   ├── preprocessor.py
+│   ├── feature_engineer.py
+│   ├── model_trainer.py
+│   ├── predictor.py
+│   └── run_pipeline.py
 │
-├── api/                         # REST API
-│   ├── main.py                  # Aplicación FastAPI
-│   └── README.md                # Documentación de la API
+├── api/
+│   ├── main.py
+│   └── README.md
 │
-├── models/                      # Modelos entrenados
+├── models/
 │   ├── delivery_time_model_v1.0.pkl
 │   ├── preprocessor_v1.0.pkl
 │   └── feature_engineer_v1.0.pkl
 │
-├── data/                        # Dataset
+├── data/
 │   └── Food_Delivery_Times.csv
 │
-├── reports/                     # Análisis y documentación
+├── reports/
 │   ├── model_comparison_*.csv
 │   └── strategic_reflections.md
 │
-├── images/                      # Assets del README
-│   ├── diagrama.png             # Modelo relacional SQL
-│   └── ...
-│
-├── notebooks/                   # Análisis exploratorio
-│   └── 01_EDA.ipynb
-│
-├── streamlit_app.py             # Dashboard interactivo
-├── requirements.txt             # Dependencias Python
-└── README.md                    # Este archivo
+├── images/
+├── notebooks/
+├── streamlit_app.py
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## Uso de la API
-
-### Endpoints
+## Endpoints de la API
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| GET | `/` | Inicio - Información de la API |
-| GET | `/health` | Health check (estado del modelo) |
-| POST | `/predict` | Predecir tiempo de entrega |
-| GET | `/model-info` | Metadata y métricas del modelo |
+| GET | `/` | Información de la API |
+| GET | `/health` | Estado del modelo |
+| POST | `/predict` | Predicción de tiempo |
+| GET | `/model-info` | Metadata y métricas |
 | GET | `/examples` | Ejemplos de requests |
 
-### Ejemplo en Python
+**Ejemplo en Python:**
 ```python
 import requests
 
-# Preparar datos de la orden
 order = {
     "Distance_km": 10.5,
     "Weather": "Rainy",
@@ -391,55 +352,42 @@ order = {
     "Courier_Experience_yrs": 3.5
 }
 
-# Hacer predicción
-response = requests.post(
-    "http://localhost:8000/predict",
-    json=order
-)
-
+response = requests.post("http://localhost:8000/predict", json=order)
 result = response.json()
-print(f"Tiempo estimado de entrega: {result['predicted_delivery_time_minutes']:.1f} min")
+print(f"Tiempo estimado: {result['predicted_delivery_time_minutes']:.1f} min")
 ```
 
-### Valores de Entrada Válidos
+**Valores válidos:**
 
-**Categóricos:**
-- `Weather`: Clear, Cloudy, Rainy, Snowy, Foggy, Windy
-- `Traffic_Level`: Low, Medium, High
-- `Time_of_Day`: Morning, Afternoon, Evening, Night
-- `Vehicle_Type`: Bike, Scooter, Car
+Categóricos:
+- Weather: Clear, Cloudy, Rainy, Snowy, Foggy, Windy
+- Traffic_Level: Low, Medium, High
+- Time_of_Day: Morning, Afternoon, Evening, Night
+- Vehicle_Type: Bike, Scooter, Car
 
-**Numéricos:**
-- `Distance_km`: 0.1 - 50.0
-- `Preparation_Time_min`: 5 - 60
-- `Courier_Experience_yrs`: 0.0 - 15.0
+Numéricos:
+- Distance_km: 0.1 - 50.0
+- Preparation_Time_min: 5 - 60
+- Courier_Experience_yrs: 0.0 - 15.0
 
 ---
 
-## Sobre el Autor
+## Autor
 
 **Jhoan Sebastian Meza Garcia**  
-Estudiante de economia | Universidad Nacional de Colombia
+Estudiante de Economía - Universidad Nacional de Colombia
 
-- 💼 [LinkedIn](https://www.linkedin.com/in/jhoan-sebastian-meza-garcia-12228b329/)
-- 🐱 [GitHub](https://github.com/jmeza-data) >><<>>><- **Tengo mas proyectos si quieres hechar un vistazo.** >><>>>
+[LinkedIn](https://www.linkedin.com/in/jhoan-sebastian-meza-garcia-12228b329/) • [GitHub](https://github.com/jmeza-data)
 
-### Otros Proyectos
-
-Explora más de mi trabajo:
-
-**Repositorios Destacados:**
-- [**Regresión IPM Continuo a Nivel de Hogar**](https://github.com/jmeza-data) - Modelo XGBoost para predecir IPM usando variables socioeconómicas
-- [**Análisis SHAP para Interpretabilidad**](https://github.com/jmeza-data) - Implementación de técnicas de explicabilidad en modelos de ML
-- [**Más proyectos...**](https://github.com/jmeza-data?tab=repositories)
-
+**Otros proyectos:**
+- [Regresión IPM Continuo a Nivel de Hogar](https://github.com/jmeza-data) - XGBoost para predicción de IPM
+- [Análisis SHAP para Interpretabilidad](https://github.com/jmeza-data) - Explicabilidad en modelos ML
+- [Más repositorios...](https://github.com/jmeza-data?tab=repositories)
 
 ---
 
 <div align="center">
 
-**⭐ Si este proyecto te pareció interesante, dale una estrella**
-
-Desarrollado con dedicación por [Jhoan Meza](https://github.com/jmeza-data)
+Desarrollado por [Jhoan Meza](https://github.com/jmeza-data)
 
 </div>
