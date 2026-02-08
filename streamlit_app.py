@@ -1,13 +1,13 @@
 """
 Streamlit App - Predicción de Tiempos de Entrega con Análisis IA
-Interfaz profesional con animaciones avanzadas
+Interfaz profesional con gráficos animados en Plotly
 """
 
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+import plotly.graph_objects as go
+import plotly.express as px
 from pathlib import Path
 import sys
 import os
@@ -627,38 +627,73 @@ def load_prediction_pipeline():
         return None, "Error: " + str(e)
 
 # ============================================================================
-# VISUALIZATION FUNCTIONS
+# PLOTLY VISUALIZATION FUNCTIONS (ANIMATED)
 # ============================================================================
 
 def create_distribution_chart(predicted_time):
-    """Create distribution chart."""
-    fig, ax = plt.subplots(figsize=(10, 4), facecolor='#0E1117')
-    ax.set_facecolor('#0E1117')
-    
+    """Create animated distribution chart with Plotly."""
+    # Generate data
     times = np.random.normal(45, 12, 1000)
     times = np.clip(times, 15, 90)
     
-    ax.hist(times, bins=35, color='#667eea', alpha=0.6, edgecolor='none')
-    ax.axvline(predicted_time, color='#f5576c', linewidth=3, label='Tu Predicción', linestyle='--')
+    # Create histogram
+    fig = go.Figure()
     
-    ax.set_xlabel('Tiempo de Entrega (minutos)', color='#888', fontsize=11, fontweight='500')
-    ax.set_ylabel('Frecuencia', color='#888', fontsize=11, fontweight='500')
-    ax.tick_params(colors='#666', labelsize=10)
+    fig.add_trace(go.Histogram(
+        x=times,
+        nbinsx=35,
+        marker=dict(
+            color='#667eea',
+            line=dict(width=0)
+        ),
+        opacity=0.7,
+        name='Distribución Histórica'
+    ))
     
-    for spine in ax.spines.values():
-        spine.set_visible(False)
+    # Add prediction line
+    fig.add_vline(
+        x=predicted_time,
+        line_dash="dash",
+        line_color="#f5576c",
+        line_width=3,
+        annotation_text="Tu Predicción",
+        annotation_position="top"
+    )
     
-    ax.legend(facecolor='#1a1a1a', edgecolor='none', labelcolor='white', framealpha=0.9)
-    ax.grid(True, alpha=0.08, color='white', linewidth=0.5)
+    fig.update_layout(
+        plot_bgcolor='#0E1117',
+        paper_bgcolor='#0E1117',
+        font=dict(color='#888', size=11),
+        xaxis=dict(
+            title='Tiempo de Entrega (minutos)',
+            gridcolor='rgba(255,255,255,0.08)',
+            showgrid=True
+        ),
+        yaxis=dict(
+            title='Frecuencia',
+            gridcolor='rgba(255,255,255,0.08)',
+            showgrid=True
+        ),
+        showlegend=True,
+        legend=dict(
+            bgcolor='rgba(26,26,26,0.9)',
+            bordercolor='#444',
+            borderwidth=1
+        ),
+        margin=dict(l=40, r=40, t=40, b=40),
+        height=350
+    )
     
-    plt.tight_layout()
+    # Add animation
+    fig.update_traces(
+        marker_line_width=0,
+        selector=dict(type='histogram')
+    )
+    
     return fig
 
 def create_gauge_chart(value, max_val=90):
-    """Create gauge chart."""
-    fig, ax = plt.subplots(figsize=(8, 2.5), facecolor='#0E1117')
-    ax.set_facecolor('#0E1117')
-    
+    """Create animated gauge chart with Plotly."""
     if value < 30:
         color = '#66BB6A'
         label = 'Rápido'
@@ -669,58 +704,93 @@ def create_gauge_chart(value, max_val=90):
         color = '#EF5350'
         label = 'Lento'
     
-    ax.barh([0], [value], height=0.5, color=color, alpha=0.9)
-    ax.barh([0], [max_val-value], left=value, height=0.5, color='#2a2a2a', alpha=0.5)
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number+delta",
+        value=value,
+        domain={'x': [0, 1], 'y': [0, 1]},
+        title={'text': label, 'font': {'color': '#888', 'size': 18}},
+        number={'suffix': " min", 'font': {'color': 'white', 'size': 32}},
+        gauge={
+            'axis': {'range': [None, max_val], 'tickcolor': "#888"},
+            'bar': {'color': color},
+            'bgcolor': "#2a2a2a",
+            'borderwidth': 0,
+            'steps': [
+                {'range': [0, 30], 'color': 'rgba(102, 187, 106, 0.2)'},
+                {'range': [30, 50], 'color': 'rgba(255, 167, 38, 0.2)'},
+                {'range': [50, max_val], 'color': 'rgba(239, 83, 80, 0.2)'}
+            ],
+            'threshold': {
+                'line': {'color': "white", 'width': 4},
+                'thickness': 0.75,
+                'value': value
+            }
+        }
+    ))
     
-    ax.set_xlim(0, max_val)
-    ax.set_ylim(-0.4, 0.4)
-    ax.axis('off')
+    fig.update_layout(
+        plot_bgcolor='#0E1117',
+        paper_bgcolor='#0E1117',
+        font=dict(color='#888'),
+        height=300,
+        margin=dict(l=20, r=20, t=60, b=20)
+    )
     
-    ax.text(value/2, 0, '{:.1f} min'.format(value), 
-            ha='center', va='center', 
-            fontsize=16, fontweight='600', color='white')
-    
-    ax.text(max_val/2, -0.8, label, 
-            ha='center', va='center', 
-            fontsize=11, color='#888')
-    
-    plt.tight_layout()
     return fig
 
 def create_factors_chart(factors_data):
-    """Create impact factors chart."""
-    fig, ax = plt.subplots(figsize=(10, 5), facecolor='#0E1117')
-    ax.set_facecolor('#0E1117')
-    
+    """Create animated horizontal bar chart with Plotly."""
     factors = list(factors_data.keys())
     values = list(factors_data.values())
     colors = ['#EF5350' if v > 10 else '#FFA726' if v > 0 else '#66BB6A' for v in values]
     
-    bars = ax.barh(factors, values, color=colors, alpha=0.8, height=0.6)
+    fig = go.Figure()
     
-    for i, (bar, val) in enumerate(zip(bars, values)):
-        x_pos = val + (2 if val > 0 else -2)
-        ha = 'left' if val > 0 else 'right'
-        ax.text(x_pos, i, '{:+.1f}'.format(val), 
-                va='center', ha=ha, fontsize=11, color='white', fontweight='600')
+    fig.add_trace(go.Bar(
+        y=factors,
+        x=values,
+        orientation='h',
+        marker=dict(
+            color=colors,
+            line=dict(width=0)
+        ),
+        text=[f'{v:+.1f}' for v in values],
+        textposition='outside',
+        textfont=dict(color='white', size=12, family='Arial Black'),
+        hovertemplate='<b>%{y}</b><br>Impacto: %{x:+.1f} min<extra></extra>'
+    ))
     
-    ax.set_xlabel('Impacto en Tiempo de Entrega (minutos)', color='#888', fontsize=11, fontweight='500')
-    ax.tick_params(colors='#666', labelsize=10)
+    fig.add_vline(
+        x=0,
+        line_dash="dash",
+        line_color="rgba(255,255,255,0.3)",
+        line_width=1
+    )
     
-    for spine in ax.spines.values():
-        spine.set_visible(False)
+    fig.update_layout(
+        plot_bgcolor='#0E1117',
+        paper_bgcolor='#0E1117',
+        font=dict(color='#888', size=11),
+        xaxis=dict(
+            title='Impacto en Tiempo de Entrega (minutos)',
+            gridcolor='rgba(255,255,255,0.08)',
+            showgrid=True,
+            zeroline=True,
+            zerolinecolor='rgba(255,255,255,0.3)'
+        ),
+        yaxis=dict(
+            gridcolor='rgba(255,255,255,0.08)',
+            showgrid=False
+        ),
+        showlegend=False,
+        margin=dict(l=120, r=80, t=40, b=60),
+        height=400
+    )
     
-    ax.axvline(0, color='#666', linewidth=1, linestyle='--', alpha=0.5)
-    ax.grid(True, axis='x', alpha=0.08, color='white', linewidth=0.5)
-    
-    plt.tight_layout()
     return fig
 
 def create_feature_importance_chart():
-    """Create feature importance visualization."""
-    fig, ax = plt.subplots(figsize=(10, 6), facecolor='#0E1117')
-    ax.set_facecolor('#0E1117')
-    
+    """Create animated feature importance chart with Plotly."""
     features = [
         'Estimated_Base_Time',
         'Distance_km',
@@ -734,23 +804,45 @@ def create_feature_importance_chart():
     
     importance = [0.232, 0.189, 0.143, 0.098, 0.087, 0.071, 0.058, 0.042]
     
-    colors = plt.cm.viridis(np.linspace(0.3, 0.9, len(features)))
+    # Create color gradient
+    colors = px.colors.sequential.Viridis
+    color_scale = [colors[int(i * (len(colors)-1) / (len(features)-1))] for i in range(len(features))]
     
-    bars = ax.barh(features, importance, color=colors, alpha=0.8, height=0.65)
+    fig = go.Figure()
     
-    for i, (bar, val) in enumerate(zip(bars, importance)):
-        ax.text(val + 0.005, i, '{:.3f}'.format(val), 
-                va='center', fontsize=10, color='white', fontweight='600')
+    fig.add_trace(go.Bar(
+        y=features,
+        x=importance,
+        orientation='h',
+        marker=dict(
+            color=importance,
+            colorscale='Viridis',
+            line=dict(width=0)
+        ),
+        text=[f'{v:.3f}' for v in importance],
+        textposition='outside',
+        textfont=dict(color='white', size=11, family='Arial'),
+        hovertemplate='<b>%{y}</b><br>Importancia: %{x:.3f}<extra></extra>'
+    ))
     
-    ax.set_xlabel('Importancia de Variable', color='#888', fontsize=11, fontweight='500')
-    ax.tick_params(colors='#666', labelsize=10)
+    fig.update_layout(
+        plot_bgcolor='#0E1117',
+        paper_bgcolor='#0E1117',
+        font=dict(color='#888', size=11),
+        xaxis=dict(
+            title='Importancia de Variable',
+            gridcolor='rgba(255,255,255,0.08)',
+            showgrid=True
+        ),
+        yaxis=dict(
+            gridcolor='rgba(255,255,255,0.08)',
+            showgrid=False
+        ),
+        showlegend=False,
+        margin=dict(l=180, r=80, t=40, b=60),
+        height=450
+    )
     
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-    
-    ax.grid(True, axis='x', alpha=0.08, color='white', linewidth=0.5)
-    
-    plt.tight_layout()
     return fig
 
 # ============================================================================
@@ -892,15 +984,13 @@ def tab_prediction(predictor, groq_client):
             st.markdown("**Análisis de Distribución**")
             st.caption("Dónde cae tu predicción vs datos históricos")
             fig1 = create_distribution_chart(predicted_time)
-            st.pyplot(fig1)
-            plt.close()
+            st.plotly_chart(fig1, use_container_width=True, config={'displayModeBar': False})
         
         with col2:
             st.markdown("**Gauge de Tiempo**")
             st.caption("Representación visual de velocidad de entrega")
             fig2 = create_gauge_chart(predicted_time)
-            st.pyplot(fig2)
-            plt.close()
+            st.plotly_chart(fig2, use_container_width=True, config={'displayModeBar': False})
         
         st.markdown("**Factores de Impacto**")
         st.caption("Qué está afectando más el tiempo de entrega")
@@ -914,8 +1004,7 @@ def tab_prediction(predictor, groq_client):
         }
         
         fig3 = create_factors_chart(factors)
-        st.pyplot(fig3)
-        plt.close()
+        st.plotly_chart(fig3, use_container_width=True, config={'displayModeBar': False})
         
         # LLM Analysis - 3 Sections
         if groq_client:
@@ -1010,8 +1099,7 @@ def tab_model_info(predictor):
     st.caption("Variables que más influyen en las predicciones")
     
     fig1 = create_feature_importance_chart()
-    st.pyplot(fig1)
-    plt.close()
+    st.plotly_chart(fig1, use_container_width=True, config={'displayModeBar': False})
     
     # Model Details
     st.markdown('<div class="section-title">Detalles Técnicos</div>', unsafe_allow_html=True)
@@ -1106,7 +1194,7 @@ def tab_about():
     st.markdown("""
     - **ML:** scikit-learn, XGBoost, LightGBM
     - **API:** FastAPI, Pydantic, Uvicorn
-    - **Frontend:** Streamlit, Matplotlib, Seaborn
+    - **Frontend:** Streamlit, Plotly, Seaborn
     - **LLM:** Groq (Llama 3.3 70B)
     - **Data:** Pandas, NumPy
     """)
