@@ -28,7 +28,6 @@ Este proyecto aborda un desafío crítico en la logística urbana: predecir con 
 El componente de SQL identifica patrones de negocio, rutas problemáticas y factores operacionales mediante queries sobre un modelo relacional de 4 tablas. El modelo de ML (Random Forest con R²=0.802) predice tiempos en tiempo real, mientras que la integración con LLM proporciona recomendaciones contextualizadas. Además de estimar tiempos de entrega, la solución permite identificar las variables que más influyen en los retrasos y aporta insights relevantes tanto para la operación logística del negocio como para la experiencia del cliente.
  contextualizadas para operaciones y comunicación con clientes.
 
----
 
 ## Componentes del Sistema
 
@@ -54,7 +53,6 @@ El componente de SQL identifica patrones de negocio, rutas problemáticas y fact
 - Identificación de patrones temporales y rutas problemáticas
 - Insights operacionales documentados
 
----
 
 ## Resultados
 
@@ -68,7 +66,7 @@ El componente de SQL identifica patrones de negocio, rutas problemáticas y fact
 
 **Decisión técnica destacada:** Creé la variable `Estimated_Base_Time = (Distance × 2) + Prep_Time` que se convirtió en el predictor más importante del modelo (importance = 0.232). Esto demuestra que el conocimiento de dominio puede superar features más complejas.
 
----
+
 
 ## Comparación de Modelos
 
@@ -82,7 +80,6 @@ Probé tres algoritmos y Random Forest superó a los demás:
 
 Random Forest mostró mejor balance entre precisión, estabilidad y capacidad para capturar relaciones no lineales.
 
----
 
 ## Stack Tecnológico
 
@@ -97,7 +94,6 @@ Random Forest mostró mejor balance entre precisión, estabilidad y capacidad pa
 - Base de Datos: SQL Server
 - Herramientas: Pandas, NumPy, Joblib
 
----
 
 ## Demo
 
@@ -115,7 +111,6 @@ Funcionalidades:
 - Gráficos de distribución histórica y factores de impacto
 - Análisis contextual generado por LLM
 
----
 
 ### Análisis Visual
 
@@ -138,8 +133,6 @@ El LLM (Llama 3.3 70B de Groq) genera:
 - Sugerencias de comunicación al cliente
 
 Decidí usar Groq porque tiene tokens gratuitos y agrega valor sin costo adicional al sistema.
-
----
 
 ### API REST
 
@@ -173,7 +166,7 @@ Respuesta:
 }
 ```
 
----
+
 
 ## Análisis SQL
 
@@ -219,7 +212,7 @@ Los análisis revelaron patrones claros: horas pico de 12-14h y 19-21h son altam
 
 Identifiqué rutas específicas consistentemente lentas y tipos de cocina con mejor rentabilidad por minuto. El ratio óptimo es 3-4 entregas por courier por hora.
 
----
+
 
 ## Decisiones Técnicas
 
@@ -243,7 +236,6 @@ Las predicciones numéricas necesitan contexto para tomar decisiones. El LLM gen
 
 Ver análisis completo en: [`reports/strategic_reflections.md`](reports/strategic_reflections.md)
 
----
 
 ## Instalación y Uso
 
