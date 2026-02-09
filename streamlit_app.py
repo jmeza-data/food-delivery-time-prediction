@@ -51,7 +51,7 @@ st.set_page_config(
 # LLM CONFIGURATION
 # ============================================================================
 
-GROQ_API_KEY = "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"
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
     
 @st.cache_resource
 def get_groq_client():
